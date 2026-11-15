@@ -6,7 +6,7 @@ import { api, type AccessRequest, type CircleSummary, type NotificationItem, typ
 import { useMemberships, useSession } from '../session'
 import {
   Alert, Badge, Button, Checkbox, Empty, ErrorState, PageHead, ROLE_LABEL, SelectField,
-  Skeleton, TextArea, TextField, fmtDate, fmtRelative, fmtTime, useForm, useToast,
+  Skeleton, TextArea, TextField, confirmError, fmtDate, fmtRelative, fmtTime, useForm, useToast,
 } from '../ui'
 
 function VerifyBanner() {
@@ -199,7 +199,7 @@ export function AccountPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const prof = useForm({ full_name: user?.full_name ?? '', timezone: user?.timezone ?? 'UTC', text_scale: user?.text_scale ?? 'standard' })
-  const pw = useForm({ current_password: '', new_password: '' })
+  const pw = useForm({ current_password: '', new_password: '', confirm_password: '' })
   const [prefs, setPrefs] = useState<Preferences>(user?.preferences ?? { contrast: 'standard', reduce_motion: false, simplified_nav: false, read_aloud: true })
   const [savingPrefs, setSavingPrefs] = useState(false)
   async function savePrefs(next: Preferences) {
@@ -255,12 +255,19 @@ export function AccountPage() {
       </section>
       <form className="panel panel-pad form-grid" noValidate onSubmit={e => {
         e.preventDefault()
-        pw.submit(async () => { await api.post('/api/auth/change-password', pw.values); pw.setValues({ current_password: '', new_password: '' }); toast('Password changed. Other devices were signed out.') })
+        const mismatch = confirmError(pw.values.new_password, pw.values.confirm_password)
+        if (mismatch) { pw.setErrors({ confirm_password: mismatch }); return }
+        pw.submit(async () => {
+          await api.post('/api/auth/change-password', { current_password: pw.values.current_password, new_password: pw.values.new_password })
+          pw.setValues({ current_password: '', new_password: '', confirm_password: '' })
+          toast('Password changed. Other devices were signed out.')
+        })
       }}>
         <h2>Change password</h2>
         {pw.formError && <Alert tone="danger">{pw.formError}</Alert>}
         <TextField label="Current password" type="password" autoComplete="current-password" {...pw.bind('current_password')} />
         <TextField label="New password" type="password" autoComplete="new-password" hint="At least 10 characters." {...pw.bind('new_password')} />
+        <TextField label="Confirm new password" type="password" autoComplete="new-password" {...pw.bind('confirm_password')} />
         <div className="form-actions"><Button type="submit" loading={pw.busy}>Change password</Button></div>
       </form>
     </div>

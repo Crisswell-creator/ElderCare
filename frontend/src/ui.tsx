@@ -313,6 +313,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   )
 }
 
+/** Returns a field error when a password and its confirmation differ, else null. */
+export function confirmError(password: string, confirm: string): string | null {
+  if (!confirm) return 'Type the password again to confirm it'
+  return password === confirm ? null : 'Passwords don\u2019t match. Type the same password in both boxes.'
+}
+
 export function errorText(err: unknown): string {
   return err instanceof ApiError ? err.message : 'Something went wrong. Please try again.'
 }

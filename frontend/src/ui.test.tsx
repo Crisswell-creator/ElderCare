@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { ConfirmDialog, DoseBadge, TextField, doseView, fmtQty } from './ui'
+import { ConfirmDialog, DoseBadge, TextField, confirmError, doseView, fmtQty } from './ui'
 
 describe('doseView', () => {
   const at = new Date('2026-03-10T08:00:00Z').getTime()
@@ -56,5 +56,13 @@ describe('fmtQty', () => {
     expect(fmtQty(2)).toBe('2')
     expect(fmtQty(0.5)).toBe('0.5')
     expect(fmtQty(1.25)).toBe('1.25')
+  })
+})
+
+describe('confirmError', () => {
+  it('accepts matching passwords and rejects mismatches or an empty confirmation', () => {
+    expect(confirmError('long pass phrase', 'long pass phrase')).toBeNull()
+    expect(confirmError('long pass phrase', 'long pass phrasE')).toMatch(/don.t match/)
+    expect(confirmError('long pass phrase', '')).toMatch(/again/)
   })
 })

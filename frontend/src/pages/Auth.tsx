@@ -4,7 +4,7 @@ import { Check } from 'lucide-react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { api, type User } from '../api'
 import { useSession } from '../session'
-import { Alert, Button, Logo, TextField, useForm } from '../ui'
+import { Alert, Button, Logo, TextField, confirmError, useForm } from '../ui'
 import { AuthArt } from '../art'
 
 function AuthLayout({ title, intro, children }: { title: string; intro?: ReactNode; children: ReactNode }) {
@@ -79,14 +79,17 @@ export function RegisterPage() {
   const qc = useQueryClient()
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const f = useForm({ full_name: '', email: '', password: '' })
+  const f = useForm({ full_name: '', email: '', password: '', confirm_password: '' })
   const next = safeNext(params.get('next'))
   if (user) return <Navigate to={next} replace />
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
+    const mismatch = confirmError(f.values.password, f.values.confirm_password)
+    if (mismatch) { f.setErrors({ confirm_password: mismatch }); return }
     f.submit(async () => {
       await api.warmup()
-      await api.post('/api/auth/register', { ...f.values, timezone: TIMEZONE })
+      const { confirm_password: _confirm, ...body } = f.values
+      await api.post('/api/auth/register', { ...body, timezone: TIMEZONE })
       await qc.invalidateQueries()
       navigate(next, { replace: true })
     })
@@ -99,6 +102,7 @@ export function RegisterPage() {
         <TextField label="Email address" type="email" autoComplete="email" required hint="We'll send a link to confirm it." {...f.bind('email')} />
         <TextField label="Password" type="password" autoComplete="new-password" required minLength={10}
           hint="At least 10 characters. A short phrase is easy to remember." {...f.bind('password')} />
+        <TextField label="Confirm password" type="password" autoComplete="new-password" required {...f.bind('confirm_password')} />
         <Button type="submit" size="lg" block loading={f.busy}>Create account</Button>
         <p className="small">Already have an account? <Link to="/login">Sign in</Link></p>
       </form>
@@ -128,11 +132,13 @@ export function ForgotPasswordPage() {
 export function ResetPasswordPage() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
-  const f = useForm({ password: '' })
+  const f = useForm({ password: '', confirm_password: '' })
   return (
     <AuthLayout title="Choose a new password" intro="Other devices will be signed out.">
       <form className="form-grid" noValidate onSubmit={e => {
         e.preventDefault()
+        const mismatch = confirmError(f.values.password, f.values.confirm_password)
+        if (mismatch) { f.setErrors({ confirm_password: mismatch }); return }
         f.submit(async () => {
           await api.warmup()
           await api.post('/api/auth/reset-password', { token: params.get('token') ?? '', password: f.values.password })
@@ -141,6 +147,7 @@ export function ResetPasswordPage() {
       }}>
         {f.formError && <Alert tone="danger">{f.formError}</Alert>}
         <TextField label="New password" type="password" autoComplete="new-password" required hint="At least 10 characters." {...f.bind('password')} />
+        <TextField label="Confirm new password" type="password" autoComplete="new-password" required {...f.bind('confirm_password')} />
         <Button type="submit" size="lg" block loading={f.busy}>Save new password</Button>
       </form>
     </AuthLayout>

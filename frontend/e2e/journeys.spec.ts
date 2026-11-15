@@ -21,7 +21,8 @@ async function registerViaUi(page: Page, name: string, who: string) {
   await page.goto('/register')
   await page.getByLabel('Your full name').fill(name)
   await page.getByLabel('Email address').fill(email(who))
-  await page.getByLabel('Password').fill(PASSWORD)
+  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
+  await page.getByLabel('Confirm password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Create account' }).click()
   await expect(page.getByRole('heading', { name: 'Welcome to ElderCare' })).toBeVisible()
 }
