@@ -428,7 +428,10 @@ class VertexProvider(GeminiProvider):
     name = "vertex"
 
     def answer(self, system: str, history: list[dict[str, str]], message: str) -> str:
-        from google.auth.exceptions import GoogleAuthError
+        try:  # optional 'gcp' extra
+            from google.auth.exceptions import GoogleAuthError
+        except ImportError as exc:
+            raise ProviderError("google-auth not installed") from exc
 
         s = get_settings()
         try:

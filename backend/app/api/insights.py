@@ -40,7 +40,7 @@ from app.models import (
     User,
     VisitQuestion,
 )
-from app.services import adherence, audit, visit_pdf
+from app.services import adherence, audit
 
 router = APIRouter(tags=["insights"])
 
@@ -452,6 +452,8 @@ def visit_summary(
     access: PatientAccess = Depends(requires(Permission.VIEW_PROFILE, Permission.VIEW_MEDICATIONS)),
     db: Session = Depends(get_db),
 ) -> Response:
+    from app.services import visit_pdf  # PDF/imaging libraries load only when needed
+
     patient = access.patient
     pid = patient.id
     today = local_today(patient)

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import secrets
+from functools import cache
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
@@ -13,9 +14,14 @@ from app.config import get_settings
 
 _hasher = PasswordHasher()  # argon2id with the library's OWASP-aligned defaults
 
-# A real hash of a random string: verifying against it when the email is unknown keeps
-# login timing the same for existing and non-existing accounts.
-_DUMMY_HASH = _hasher.hash(secrets.token_urlsafe(16))
+
+@cache
+def _dummy_hash() -> str:
+    """A real hash of a random string, computed on first use (not at import, which would slow
+    serverless cold starts). Verifying against it when the email is unknown keeps login timing
+    the same for existing and non-existing accounts."""
+    return _hasher.hash(secrets.token_urlsafe(16))
+
 
 # Unambiguous alphabet (no 0/O, 1/I/L) so codes can be read aloud over the phone.
 _CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
@@ -27,7 +33,9 @@ def hash_password(password: str) -> str:
 
 def verify_password(password: str, password_hash: str | None) -> bool:
     try:
-        return _hasher.verify(password_hash or _DUMMY_HASH, password) and password_hash is not None
+        return (
+            _hasher.verify(password_hash or _dummy_hash(), password) and password_hash is not None
+        )
     except (VerifyMismatchError, VerificationError, InvalidHashError):
         return False
 

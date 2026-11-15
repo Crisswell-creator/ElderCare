@@ -3,11 +3,11 @@ name = "eldercare-api"
 version = "1.0.0"
 description = "ElderCare: shared elderly healthcare and medication management API"
 requires-python = ">=3.12"
+# Core: everything the API needs to serve requests. Kept small because serverless hosts
+# (Vercel) install it on cold start.
 dependencies = [
     "fastapi>=0.115",
-    "uvicorn[standard]>=0.32",
     "sqlalchemy>=2.0.36",
-    "alembic>=1.14",
     "pydantic-settings>=2.6",
     "email-validator>=2.2",
     "argon2-cffi>=23.1",
@@ -15,10 +15,14 @@ dependencies = [
     "fpdf2>=2.8",
     "tzdata>=2024.2",
     "psycopg[binary]>=3.2",
-    "google-auth>=2.36",
     "requests>=2.32",
-    "google-cloud-storage>=2.18",
 ]
+
+[project.optional-dependencies]
+# Long-running server and migrations (Docker / Cloud Run / local development).
+server = ["uvicorn[standard]>=0.32", "alembic>=1.14"]
+# Google Cloud: Cloud Scheduler OIDC verification, Vertex AI auth, Cloud Storage documents.
+gcp = ["google-auth>=2.36", "google-cloud-storage>=2.18"]
 
 [dependency-groups]
 dev = [

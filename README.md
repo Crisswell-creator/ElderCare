@@ -52,7 +52,7 @@ Requirements: Python 3.12+ with [uv](https://docs.astral.sh/uv/), and Node 22+.
 ```bash
 cd backend
 cp .env.example .env            # local settings; never commit real secrets
-uv sync
+uv sync --all-extras            # core + server (uvicorn, alembic) + gcp extras
 uv run alembic upgrade head
 uv run python -m app.seed_demo  # optional: fictional demo data, clearly labelled
 uv run uvicorn app.main:app --port 8000

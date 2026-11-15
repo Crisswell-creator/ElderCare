@@ -21,8 +21,11 @@ logger = logging.getLogger("eldercare.jobs")
 
 
 def _verify_google_oidc(token: str, audience: str, expected_email: str) -> bool:
-    from google.auth.transport import requests as google_requests
-    from google.oauth2 import id_token
+    try:  # optional 'gcp' extra; without it OIDC tokens are simply not accepted
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token
+    except ImportError:
+        return False
 
     try:
         claims = id_token.verify_oauth2_token(  # type: ignore[no-untyped-call]
