@@ -11,9 +11,9 @@
 | Known trade-off | Registration says "already exists" for a registered email (usability for elders); login and reset never reveal it | `api/auth.py` |
 | Brute force | Persisted throttling: 5 failed logins in 15 minutes per account; 5 bad invitation codes per user; 5 wrong current passwords on change; 3 reset emails per hour | `services/throttle.py` |
 | Data isolation | Every patient route resolves an *active* membership; non-members get 404; child records are checked against the patient in the path | `deps.py`, every router |
-| Least privilege | 12 granular permissions; managing implies viewing; approval needs at least one explicit permission; only the elder designates representatives; nobody can remove the elder | `domain.py`, `api/care_team.py` |
-| Elder claim | Taking over a profile requires a verified email from someone with no existing role in the circle (blocks self-approval via a second account) | `api/care_team.py` |
-| Consent | Invitation codes are hashed, single-use, expire after 72 hours and only create a pending request; every grant, change and revocation is audited and notified | `api/care_team.py` |
+| Least privilege | 12 granular permissions; managing implies viewing; approval needs at least one explicit permission; only the elder designates representatives; nobody can remove the elder | `domain.py`, `api/care_team.py`, `api/invitations.py` |
+| Elder claim | Taking over a profile requires a verified email from someone with no existing role in the circle (blocks self-approval via a second account) | `api/invitations.py` |
+| Consent | Invitation codes are hashed, single-use, expire after 72 hours and only create a pending request; every grant, change and revocation is audited and notified | `api/invitations.py` |
 | Input validation | Pydantic models with lengths, patterns, enums and ranges on every input; time zones checked against the IANA database | all routers |
 | Injection | SQLAlchemy parameter binding throughout; no string-built SQL; `LIKE` patterns built only from server-generated keys or a `^[a-z_]+$`-validated category | |
 | Uploads | Type decided from magic bytes (PDF, PNG, JPEG) not the client's claim; 10 MB cap read with a bounded read; random storage keys; sanitised filenames; downloads only through an authorised endpoint with `attachment`, `nosniff` and `no-store` | `api/documents.py`, `services/storage.py` |

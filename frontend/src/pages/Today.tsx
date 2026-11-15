@@ -44,9 +44,9 @@ function DoseCard({ dose, view, canConfirm, isElder, onSkip, act, busyId }: {
   const headingId = `dose-${dose.id}`
   return (
     <article className="dose" aria-labelledby={headingId}>
-      <div className="spread" style={{ alignItems: 'flex-start' }}>
+      <div className="spread items-start">
         <div>
-          <h3 id={headingId} className="dose-name">{dose.medication_name}{dose.strength && <span className="muted" style={{ fontWeight: 600 }}> {dose.strength}</span>}</h3>
+          <h3 id={headingId} className="dose-name">{dose.medication_name}{dose.strength && <span className="muted semibold"> {dose.strength}</span>}</h3>
           <p className="dose-meta">{fmtQty(dose.dose_amount)} {dose.dose_unit}{dose.instructions && <> &mdash; {dose.instructions}</>}</p>
         </div>
         <DoseBadge view={view} />
@@ -192,7 +192,7 @@ export function TodayPage() {
           {appt && (
             <section className="panel" aria-labelledby="appt-heading">
               <div className="panel-head"><h2 id="appt-heading">Next appointment</h2><CalendarDays aria-hidden="true" style={{ color: 'var(--muted)' }} /></div>
-              <div className="panel-body stack" style={{ gap: 4 }}>
+              <div className="panel-body stack gap-1">
                 <p style={{ fontSize: 'var(--fs-lg)', fontWeight: 700 }}>{fmtDate(appt.local_date, { weekday: 'long', day: 'numeric', month: 'long' })}, {fmtTime(appt.local_time)}</p>
                 <p>{appt.doctor_name}{appt.specialty && ` (${appt.specialty})`}</p>
                 {appt.location && <p className="muted">{appt.location}</p>}

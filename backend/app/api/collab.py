@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db, utcnow
-from app.deps import PatientAccess, patient_access
+from app.deps import PatientAccess, get_owned, patient_access
 from app.domain import MembershipStatus, NotificationKind, Permission
 from app.errors import AppError, Forbidden, NotFound, TooManyRequests
 from app.models import Appointment, CareNote, CareTask, Membership, Notification
@@ -115,10 +115,7 @@ def _check_assignee(db: Session, access: PatientAccess, user_id: int | None) -> 
 
 
 def _get_task(db: Session, access: PatientAccess, task_id: int) -> CareTask:
-    t = db.get(CareTask, task_id)
-    if t is None or t.patient_id != access.patient.id:
-        raise NotFound("That task was not found.")
-    return t
+    return get_owned(db, CareTask, task_id, access, "task")
 
 
 def _notify_assignee(db: Session, access: PatientAccess, t: CareTask) -> None:
@@ -373,8 +370,8 @@ def create_note(
 
 
 def _get_note(db: Session, access: PatientAccess, note_id: int) -> CareNote:
-    n = db.get(CareNote, note_id)
-    if n is None or n.patient_id != access.patient.id or not access.can(_note_perm(n.kind)):
+    n = get_owned(db, CareNote, note_id, access, "note")
+    if not access.can(_note_perm(n.kind)):
         raise NotFound("That note was not found.")
     if not (access.is_elder or n.author_user_id == access.user.id):
         raise Forbidden("Only the author or the elder can change this note.")

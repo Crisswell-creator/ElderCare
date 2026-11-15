@@ -49,9 +49,9 @@ export function MedicationsPage() {
           ) : (
             <ul className="list">
               {q.data!.map(m => (
-                <li key={m.id} className="spread" style={{ alignItems: 'flex-start' }}>
+                <li key={m.id} className="spread items-start">
                   <div className="stack" style={{ gap: 4, minWidth: 0 }}>
-                    <h2><Link to={`/p/${pid}/medications/${m.id}`}>{m.name}</Link> <span className="muted" style={{ fontWeight: 600 }}>{m.strength}</span></h2>
+                    <h2><Link to={`/p/${pid}/medications/${m.id}`}>{m.name}</Link> <span className="muted semibold">{m.strength}</span></h2>
                     <p>{fmtQty(m.dose_amount)} {m.dose_unit} &nbsp;|&nbsp; <span className="num">{scheduleText(m)}</span></p>
                     {m.instructions && <p className="muted small">{m.instructions}</p>}
                   </div>
@@ -113,7 +113,7 @@ export function MedicationDetailPage() {
       {m.status !== 'active' && <Alert tone="warn" title={m.status === 'paused' ? 'Paused' : 'Stopped'}>{m.status_reason || 'No reason recorded.'} No reminders are sent while it is not active.</Alert>}
       <div className="grid-dash">
         <section className="panel panel-pad" aria-labelledby="details-h">
-          <h2 id="details-h" style={{ marginBottom: 16 }}>Details as recorded</h2>
+          <h2 id="details-h" className="mb-4">Details as recorded</h2>
           <dl className="kv">
             <dt>Dose</dt><dd>{fmtQty(m.dose_amount)} {m.dose_unit} ({m.form})</dd>
             <dt>When</dt><dd className="num">{scheduleText(m)}</dd>
@@ -284,7 +284,7 @@ function MedicationForm({ pid, med, onDone }: { pid: number; med?: Medication; o
                     <div style={{ maxWidth: '12rem' }}><TextField label={`Time ${times.length > 1 ? i + 1 : ''}`.trim()} type="time" required value={t.local_time} onChange={e => setTime(i, { local_time: e.target.value })} /></div>
                     {times.length > 1 && <Button variant="quiet" icon={<X aria-hidden="true" />} onClick={() => setTimes(ts => ts.filter((_, j) => j !== i))}>Remove time</Button>}
                   </div>
-                  <div className="chips" style={{ marginTop: 12 }} role="group" aria-label={`Days for time ${i + 1}`}>
+                  <div className="chips mt-3" role="group" aria-label={`Days for time ${i + 1}`}>
                     {DAYS.map((d, di) => (
                       <label key={d} className="chip"><input type="checkbox" checked={t.days.includes(di)} onChange={() => toggleDay(i, di)} /><span>{d}</span></label>
                     ))}

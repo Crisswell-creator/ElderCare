@@ -17,7 +17,7 @@ These are honest self-assessments with evidence. No scores are claimed. Commands
   throttling; patient isolation (404 for non-members); 12 granular permissions; consent
   workflow; magic-byte upload validation; CSP and HSTS; boot-time production config refusal;
   append-only audit log; Secret Manager.
-- **Files:** `docs/SECURITY.md`, `backend/app/{deps,security,main,config}.py`, `api/care_team.py`
+- **Files:** `docs/SECURITY.md`, `backend/app/{deps,security,main,config}.py`, `api/care_team.py`, `api/invitations.py`
 - **Verify:** `uv run pytest tests/test_access.py tests/test_auth.py`; `uv run pip-audit`; `npm audit`
 - **Evidence:** isolation and revocation tests pass; 0 known vulnerabilities in both ecosystems.
   Two independent reviews found 0 critical or high issues. All 4 medium findings were fixed with

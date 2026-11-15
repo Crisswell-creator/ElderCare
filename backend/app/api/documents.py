@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.db import get_db, utcnow
-from app.deps import PatientAccess, requires
+from app.deps import PatientAccess, get_owned, requires
 from app.domain import Permission
 from app.errors import AppError, Forbidden, NotFound
 from app.models import Document
@@ -135,8 +135,8 @@ async def upload_document(
 
 
 def _get(db: Session, access: PatientAccess, doc_id: int) -> Document:
-    doc = db.get(Document, doc_id)
-    if doc is None or doc.patient_id != access.patient.id or doc.deleted_at is not None:
+    doc = get_owned(db, Document, doc_id, access, "document")
+    if doc.deleted_at is not None:
         raise NotFound("That document was not found.")
     return doc
 

@@ -52,8 +52,8 @@ function PatientGuard({ children }: { children: ReactNode }) {
     return (
       <div className="page">
         <h1>Not available</h1>
-        <p className="muted" style={{ marginTop: 8 }}>This profile doesn't exist or you no longer have access to it.</p>
-        <a href="/" className="btn btn-primary" style={{ marginTop: 16 }}>Go home</a>
+        <p className="muted mt-2">This profile doesn't exist or you no longer have access to it.</p>
+        <a href="/" className="btn btn-primary mt-4">Go home</a>
       </div>
     )
   }
@@ -61,7 +61,7 @@ function PatientGuard({ children }: { children: ReactNode }) {
 }
 
 function NotFound() {
-  return <div className="page"><h1>Page not found</h1><a href="/" className="btn btn-primary" style={{ marginTop: 16 }}>Go home</a></div>
+  return <div className="page"><h1>Page not found</h1><a href="/" className="btn btn-primary mt-4">Go home</a></div>
 }
 
 export function App() {

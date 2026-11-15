@@ -114,7 +114,7 @@ export function InsightsPage() {
             <details className="panel panel-pad">
               <summary style={{ cursor: 'pointer', fontWeight: 600 }}>How these numbers are calculated</summary>
               <ul style={{ marginBottom: 0 }}>{r.rules.map(rule => <li key={rule}>{rule}</li>)}</ul>
-              <table className="data" style={{ marginTop: 16 }}>
+              <table className="data mt-4">
                 <caption className="sr-only">Outcomes per period</caption>
                 <thead><tr><th scope="col">Period</th><th scope="col">Taken</th><th scope="col">Skipped</th><th scope="col">Missed</th><th scope="col">Not confirmed</th><th scope="col">Upcoming</th></tr></thead>
                 <tbody>{r.series.map(s => <tr key={s.period}><td>{fmtDate(s.period, { day: 'numeric', month: 'short', year: 'numeric' })}</td><td className="num">{s.taken}</td><td className="num">{s.skipped}</td><td className="num">{s.missed}</td><td className="num">{s.unconfirmed}</td><td className="num">{s.pending}</td></tr>)}</tbody>
@@ -165,7 +165,7 @@ export function ActivityPage() {
           <ol className="list">
             {items.map(a => (
               <li key={a.id}>
-                <div className="spread" style={{ alignItems: 'flex-start' }}>
+                <div className="spread items-start">
                   <p>{a.summary}</p>
                   <time className="muted small num" dateTime={a.created_at} style={{ whiteSpace: 'nowrap' }}>{fmtDateTime(a.created_at)}</time>
                 </div>

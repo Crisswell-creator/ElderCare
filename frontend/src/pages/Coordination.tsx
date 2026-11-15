@@ -46,10 +46,10 @@ export function TasksPage() {
           <ul className="list">
             {q.data!.map(t => (
               <li key={t.id}>
-                <div className="spread" style={{ alignItems: 'flex-start' }}>
-                  <div className="stack" style={{ gap: 4 }}>
+                <div className="spread items-start">
+                  <div className="stack gap-1">
                     <h2 style={{ fontSize: 'var(--fs-md)' }}>{t.title}</h2>
-                    {t.description && <p className="muted small" style={{ whiteSpace: 'pre-line' }}>{t.description}</p>}
+                    {t.description && <p className="muted small pre-line">{t.description}</p>}
                     <p className="small">
                       {t.assignee_name ? <>For <strong>{t.assignee_name}</strong></> : <span className="muted">Unassigned</span>}
                       {t.due_date && <> &nbsp;|&nbsp; Due {fmtDate(t.due_date)}</>}
@@ -63,7 +63,7 @@ export function TasksPage() {
                     {(t.status === 'done' || t.status === 'cancelled') && <Badge tone={t.status === 'done' ? 'ok' : 'neutral'}>{STATUS_LABEL[t.status]}</Badge>}
                   </div>
                 </div>
-                <div className="row" style={{ marginTop: 12 }}>
+                <div className="row mt-3">
                   {t.can_update_status && (t.status === 'open' || t.status === 'in_progress') && (
                     <>
                       <Button icon={<CheckCircle2 aria-hidden="true" />} onClick={() => setCompleting(t)}>Mark done<span className="sr-only">: {t.title}</span></Button>
@@ -151,14 +151,14 @@ export function NotesPage() {
           <ul className="list">
             {q.data!.map(n => (
               <li key={n.id}>
-                <div className="spread" style={{ alignItems: 'flex-start' }}>
+                <div className="spread items-start">
                   <div className="stack" style={{ gap: 4, minWidth: 0 }}>
-                    <p className="row" style={{ gap: 8 }}>{n.pinned && <Pin size={16} aria-label="Pinned" />}<strong style={{ color: 'var(--navy-800)' }}>{n.title}</strong><Badge tone={n.kind === 'update' ? 'warn' : 'neutral'}>{NOTE_LABEL[n.kind]}</Badge></p>
-                    <p style={{ whiteSpace: 'pre-line' }}>{n.body}</p>
+                    <p className="row gap-2">{n.pinned && <Pin size={16} aria-label="Pinned" />}<strong style={{ color: 'var(--navy-800)' }}>{n.title}</strong><Badge tone={n.kind === 'update' ? 'warn' : 'neutral'}>{NOTE_LABEL[n.kind]}</Badge></p>
+                    <p className="pre-line">{n.body}</p>
                     <p className="muted small">{n.author_name} &nbsp;|&nbsp; {fmtRelative(n.updated_at)}</p>
                   </div>
                   {n.can_edit && (
-                    <div className="row" style={{ gap: 0, flexWrap: 'nowrap' }}>
+                    <div className="row gap-0 nowrap">
                       <button type="button" className="icon-btn" aria-label={`Edit ${n.title}`} onClick={() => setEditing(n)}><Pencil aria-hidden="true" /></button>
                       <button type="button" className="icon-btn" aria-label={`Remove ${n.title}`} onClick={() => setRemoving(n)}><Trash2 aria-hidden="true" /></button>
                     </div>

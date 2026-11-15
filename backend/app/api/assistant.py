@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app.api.medications import local_today
+from app.api.doses import local_today
 from app.config import get_settings
 from app.db import get_db
 from app.deps import PatientAccess, patient_access

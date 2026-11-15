@@ -13,7 +13,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.appointments import AppointmentOut, appt_out
-from app.api.medications import DoseOut, dose_out, local_today, med_out, refresh_patient_doses
+from app.api.doses import DoseOut, dose_out, local_today
+from app.api.medications import med_out
 from app.db import get_db, utcnow
 from app.deps import PatientAccess, get_current_user, patient_access, requires
 from app.domain import (
@@ -40,7 +41,7 @@ from app.models import (
     User,
     VisitQuestion,
 )
-from app.services import adherence, audit
+from app.services import adherence, audit, doses
 
 router = APIRouter(tags=["insights"])
 
@@ -108,7 +109,7 @@ def adherence_report(
     start = start or end - timedelta(days=29)
     if end < start or (end - start).days > 366:
         raise AppError("Choose a date range of up to one year.")
-    refresh_patient_doses(db, access.patient, utcnow())
+    doses.refresh_patient_doses(db, access.patient, utcnow())
     rep = adherence.build(db, access.patient.id, start, end, granularity, medication_id)
     return AdherenceOut(
         start=start,
@@ -200,7 +201,7 @@ def overview(
     now = utcnow()
     today_doses = low_stock = upcoming = a7 = a30 = recent = None
     if access.can(Permission.VIEW_MEDICATIONS):
-        refresh_patient_doses(db, patient, now)
+        doses.refresh_patient_doses(db, patient, now)
         today_doses = [
             dose_out(d)
             for d in db.scalars(
@@ -359,7 +360,7 @@ def my_overview(
 
     for m in by_pid.values():
         if perm(m, Permission.VIEW_MEDICATIONS):
-            refresh_patient_doses(db, m.patient, now)
+            doses.refresh_patient_doses(db, m.patient, now)
     med_pids = [pid for pid, m in by_pid.items() if perm(m, Permission.VIEW_MEDICATIONS)]
     counts: dict[int, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     if med_pids:

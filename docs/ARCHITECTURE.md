@@ -27,7 +27,7 @@ dev server proxies `/api` to the same backend.
 | `deps.py` | Authentication (session cookie) and per-patient authorisation (`requires(...)`). |
 | `errors.py` | One JSON error envelope. Unhandled errors are logged and answered generically. |
 | `logging_setup.py` | JSON logs with Cloud Logging `severity` and trace correlation. |
-| `api/*.py` | Routers by domain: auth, patients, care team, medications and doses, appointments, documents, insights, notifications, jobs. |
+| `api/*.py` | Routers by domain: auth, patients, care team members, invitations and access requests, medications, doses, appointments, documents, insights, notifications, jobs. |
 | `services/doses.py` | Dose lifecycle: generation, state rules, confirmation, undo, snooze. |
 | `services/schedule.py` | Pure time-zone and DST schedule arithmetic, plus stock estimates. |
 | `services/engine.py` | The reminder engine tick. |

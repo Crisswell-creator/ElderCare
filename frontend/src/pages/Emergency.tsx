@@ -66,7 +66,7 @@ export function EmergencyPage() {
           <Button variant="danger-solid" size="lg" icon={<BellRing aria-hidden="true" />} onClick={() => setConfirming(true)}>Ask for help</Button>
           {send.error && <Alert tone="danger">{errorText(send.error)}</Alert>}
           {s?.created_at && (
-            <div role="status" className="stack" style={{ gap: 4 }}>
+            <div role="status" className="stack gap-1">
               <p><strong>Alert sent {fmtRelative(s.created_at)} to {s.recipients} {s.recipients === 1 ? 'person' : 'people'}</strong> (shown in their ElderCare notifications).</p>
               <p className="small">Email: {s.email_sent} accepted by the mail service{s.email_pending > 0 && `, ${s.email_pending} waiting to send`}{s.email_failed > 0 && `, ${s.email_failed} failed`}{s.in_app_only > 0 && `, ${s.in_app_only} in-app only (email not confirmed)`}. {s.read} {s.read === 1 ? 'person has' : 'people have'} opened it.</p>
               <p className="small muted">ElderCare can't tell whether someone has read an email, so wait for a reply or call them.</p>

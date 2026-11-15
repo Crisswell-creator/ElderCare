@@ -13,9 +13,9 @@ from sqlalchemy.orm import Session
 
 from app.api.auth import TimeZone
 from app.db import Base, get_db
-from app.deps import PatientAccess, get_current_user, patient_access, requires
+from app.deps import PatientAccess, get_current_user, get_owned, patient_access, requires
 from app.domain import SUGGESTED, MembershipStatus, Permission, Role
-from app.errors import Conflict, NotFound
+from app.errors import Conflict
 from app.models import Allergy, Doctor, EmergencyContact, HistoryEntry, Membership, Patient, User
 from app.services import audit
 
@@ -322,10 +322,7 @@ def _crud(
     through the profile endpoint, so a page renders from one request."""
 
     def _get(db: Session, access: PatientAccess, item_id: int) -> Any:
-        item = db.get(model, item_id)
-        if item is None or item.patient_id != access.patient.id:  # type: ignore[attr-defined]
-            raise NotFound(f"That {noun} was not found.")
-        return item
+        return get_owned(db, model, item_id, access, noun)
 
     def _log(db: Session, access: PatientAccess, verb: str, item: Any) -> None:
         audit.record(

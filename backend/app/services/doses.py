@@ -291,3 +291,44 @@ def suppress_alerts_if_resolved(db: Session, dose: DoseEvent) -> None:
             )
             .execution_options(synchronize_session=False)
         )
+
+
+# Last on-read refresh per patient (in app time). Reads within REFRESH_INTERVAL skip the
+# refresh; any medicine change clears the entry. Per process, so serverless instances simply
+# refresh a little more often; correctness never depends on it.
+_last_refresh: dict[int, datetime] = {}
+REFRESH_INTERVAL = timedelta(seconds=30)
+
+
+def invalidate_refresh(patient_id: int) -> None:
+    _last_refresh.pop(patient_id, None)
+
+
+def refresh_patient_doses(db: Session, patient: Patient, now: datetime) -> None:
+    """Brings this patient's doses up to date on read, so screens are correct even between
+    scheduler ticks. Notifications are still sent only by the scheduler."""
+    last = _last_refresh.get(patient.id)
+    if last is not None and timedelta(0) <= now - last < REFRESH_INTERVAL:
+        return
+    _last_refresh[patient.id] = now
+    med_ids = list(
+        db.scalars(
+            select(Medication.id).where(
+                Medication.patient_id == patient.id, Medication.status == MedicationStatus.ACTIVE
+            )
+        )
+    )
+    if med_ids:
+        materialize(db, now, med_ids)
+    for dose in db.scalars(
+        select(DoseEvent).where(
+            DoseEvent.patient_id == patient.id,
+            DoseEvent.status.in_([DoseStatus.SCHEDULED, DoseStatus.UNCONFIRMED]),
+            DoseEvent.scheduled_at <= now,
+        )
+    ):
+        new = due_transitions(dose, patient, now)
+        if new:
+            dose.status = new
+            dose.status_changed_at = now
+    db.commit()

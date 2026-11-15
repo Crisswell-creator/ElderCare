@@ -151,7 +151,7 @@ export function OverviewPage() {
           )}
           <section className="panel" aria-labelledby="contacts-h">
             <div className="panel-head"><h2 id="contacts-h">Emergency contacts</h2></div>
-            <div className="panel-body stack" style={{ gap: 8 }}>
+            <div className="panel-body stack gap-2">
               {o.emergency_contacts.length === 0 ? <p className="muted small">None recorded.</p> : o.emergency_contacts.map(c => (
                 <p key={c.name + c.phone}>{c.name}{c.relationship_label && <span className="muted"> ({c.relationship_label})</span>}<br /><a href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}>{c.phone}</a></p>
               ))}

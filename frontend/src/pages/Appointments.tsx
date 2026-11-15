@@ -23,7 +23,7 @@ function MonthCalendar({ appts, month, setMonth, onPick, now }: { appts: Appoint
     <section className="panel" aria-labelledby="cal-h">
       <div className="panel-head">
         <h2 id="cal-h">{label}</h2>
-        <div className="row" style={{ gap: 4 }}>
+        <div className="row gap-1">
           <button type="button" className="icon-btn" aria-label="Previous month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}><ChevronLeft aria-hidden="true" /></button>
           <button type="button" className="icon-btn" aria-label="Next month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}><ChevronRight aria-hidden="true" /></button>
         </div>
@@ -102,19 +102,19 @@ export function AppointmentsPage() {
               <ul className="list">
                 {list.data!.map(a => (
                   <li key={a.id} id={`appt-${a.id}`} style={highlight === a.local_date ? { background: 'var(--teal-50)' } : undefined}>
-                    <div className="spread" style={{ alignItems: 'flex-start' }}>
-                      <div className="stack" style={{ gap: 4 }}>
+                    <div className="spread items-start">
+                      <div className="stack gap-1">
                         <p style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--navy-800)' }}>
                           {fmtDate(a.local_date, { weekday: 'long', day: 'numeric', month: 'long' })}, <span className="num">{fmtTime(a.local_time)}</span>
                         </p>
                         <p>{a.doctor_name}{a.specialty && <span className="muted">, {a.specialty}</span>}</p>
                         {a.location && <p className="muted row" style={{ gap: 6 }}><MapPin size={16} aria-hidden="true" />{a.location}</p>}
                         {a.purpose && <p className="small">Purpose: {a.purpose}</p>}
-                        {a.notes && <p className="small muted" style={{ whiteSpace: 'pre-line' }}>{a.notes}</p>}
+                        {a.notes && <p className="small muted pre-line">{a.notes}</p>}
                       </div>
                       {a.status !== 'scheduled' && <Badge tone={a.status === 'completed' ? 'ok' : 'neutral'}>{a.status === 'completed' ? 'Attended' : 'Cancelled'}</Badge>}
                     </div>
-                    <div className="row" style={{ marginTop: 12 }}>
+                    <div className="row mt-3">
                       <a className="btn btn-quiet" href={p(pid, `/appointments/${a.id}/calendar.ics`)}><Download aria-hidden="true" />Add to calendar</a>
                       {can('manage_appointments') && a.status === 'scheduled' && (
                         <>
@@ -176,7 +176,7 @@ function AppointmentForm({ pid, appt, onDone }: { pid: number; appt?: Appointmen
       <TextArea label="Notes" rows={2} {...f.bind('notes')} />
       <fieldset>
         <legend>Reminders</legend>
-        <div className="form-grid two" style={{ gap: 0 }}>
+        <div className="form-grid two gap-0">
           {REMINDERS.map(([v, label]) => (
             <Checkbox key={v} label={label} checked={offsets.includes(v)} onChange={() => setOffsets(o => (o.includes(v) ? o.filter(x => x !== v) : [...o, v]))} />
           ))}
@@ -208,7 +208,7 @@ function QuestionsPanel({ pid }: { pid: number }) {
         {q.data?.length === 0 && <p className="muted small">No questions yet.</p>}
         <ul className="list" style={{ margin: '0 calc(-1 * var(--s5))' }}>
           {q.data?.map(item => (
-            <li key={item.id} className="spread" style={{ flexWrap: 'nowrap', alignItems: 'flex-start' }}>
+            <li key={item.id} className="spread items-start nowrap">
               <label className="check" style={{ flex: 1, padding: 0 }}>
                 <input type="checkbox" checked={item.resolved} disabled={!item.is_mine && toggle.isPending} onChange={() => toggle.mutate(item.id)} />
                 <span><span style={{ textDecoration: item.resolved ? 'line-through' : undefined }}>{item.text}</span>

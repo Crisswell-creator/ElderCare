@@ -477,3 +477,18 @@ html[data-contrast='high'] .page-art, html[data-contrast='high'] .auth-art { dis
 
 /* Header actions sit above the art and stay fully legible. */
 .page-head > div + .row { position: relative; z-index: 2; }
+
+/* Single-purpose layout utilities. They replace one-off inline styles, so like inline styles
+   they always win over component rules (the same convention as Bootstrap's utilities). */
+.gap-0 { gap: 0 !important; }
+.gap-1 { gap: var(--s1) !important; }
+.gap-2 { gap: var(--s2) !important; }
+.items-start { align-items: flex-start !important; }
+.nowrap { flex-wrap: nowrap !important; }
+.mt-2 { margin-top: var(--s2) !important; }
+.mt-3 { margin-top: var(--s3) !important; }
+.mt-4 { margin-top: var(--s4) !important; }
+.mb-4 { margin-bottom: var(--s4) !important; }
+.pre-line { white-space: pre-line !important; }
+.semibold { font-weight: 600 !important; }
+.text-right { text-align: right !important; }

@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.medications import local_today
+from app.api.doses import local_today
 from app.db import get_db, utcnow
 from app.deps import PatientAccess, patient_access, requires
 from app.domain import Permission

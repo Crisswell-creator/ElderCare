@@ -88,10 +88,10 @@ function RecordSection({ pid, kind, items, canEdit, render }: { pid: number; kin
       {items.length === 0 ? <p className="panel-body muted">None recorded.</p> : (
         <ul className="list list-compact">
           {items.map(i => (
-            <li key={String(i.id)} className="spread" style={{ flexWrap: 'nowrap', alignItems: 'flex-start' }}>
+            <li key={String(i.id)} className="spread items-start nowrap">
               <div style={{ minWidth: 0 }}>{render(i)}</div>
               {canEdit && (
-                <div className="row" style={{ gap: 0, flexWrap: 'nowrap' }}>
+                <div className="row gap-0 nowrap">
                   <button type="button" className="icon-btn" aria-label={`Edit ${def.noun}`} onClick={() => setEditing(i)}><Pencil aria-hidden="true" /></button>
                   <button type="button" className="icon-btn" aria-label={`Remove ${def.noun}`} onClick={() => setRemoving(i)}><Trash2 aria-hidden="true" /></button>
                 </div>
@@ -133,14 +133,14 @@ export function HealthPage() {
         actions={canEdit && <Button variant="secondary" icon={<Pencil aria-hidden="true" />} onClick={() => setEditing(true)}>Edit details</Button>} />
       {pt.managed_by_representative && <Alert tone="info" title="Managed by a trusted representative">This profile was set up on the person's behalf. They can take it over by joining with an elder invitation code.</Alert>}
       <section className="panel panel-pad" aria-labelledby="about-h">
-        <h2 id="about-h" style={{ marginBottom: 16 }}>About</h2>
+        <h2 id="about-h" className="mb-4">About</h2>
         <dl className="kv">
           <dt>Name</dt><dd>{pt.full_name}{pt.preferred_name && <span className="muted"> (likes to be called {pt.preferred_name})</span>}</dd>
           <dt>Date of birth</dt><dd>{pt.date_of_birth ? `${fmtDate(pt.date_of_birth, { day: 'numeric', month: 'long', year: 'numeric' })} (age ${age(pt.date_of_birth)})` : <span className="muted">Not recorded</span>}</dd>
           <dt>Phone</dt><dd>{pt.phone || <span className="muted">Not recorded</span>}</dd>
           <dt>Address</dt><dd>{pt.address || <span className="muted">Not recorded</span>}</dd>
           <dt>Time zone</dt><dd>{pt.timezone.replace(/_/g, ' ')}</dd>
-          {pt.notes && <><dt>Notes</dt><dd style={{ whiteSpace: 'pre-line' }}>{pt.notes}</dd></>}
+          {pt.notes && <><dt>Notes</dt><dd className="pre-line">{pt.notes}</dd></>}
           <dt>Reminder timing</dt>
           <dd>Unconfirmed after {pt.dose_grace_minutes} min, counted as missed after {Math.round(pt.missed_after_minutes / 60 * 10) / 10} h
             {can('manage_medications') && <> &nbsp;<Button variant="quiet" onClick={() => setRules(true)}>Change</Button></>}</dd>
@@ -242,7 +242,7 @@ export function DocumentsPage() {
                   <td><a href={p(pid, `/documents/${d.id}/download`)}>{d.title}</a><div className="muted small">{d.filename} | {(d.size_bytes / 1024).toFixed(0)} KB</div></td>
                   <td>{CATEGORY[d.category] ?? d.category}</td>
                   <td className="hide-mobile">{fmtDate(d.created_at, { day: 'numeric', month: 'short', year: 'numeric' })}<div className="muted small">{d.uploaded_by}</div></td>
-                  <td style={{ textAlign: 'right' }}>{d.can_delete && <button type="button" className="icon-btn" aria-label={`Remove ${d.title}`} onClick={() => setRemoving(d)}><Trash2 aria-hidden="true" /></button>}</td>
+                  <td className="text-right">{d.can_delete && <button type="button" className="icon-btn" aria-label={`Remove ${d.title}`} onClick={() => setRemoving(d)}><Trash2 aria-hidden="true" /></button>}</td>
                 </tr>
               ))}
             </tbody>

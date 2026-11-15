@@ -16,7 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.db import get_db, utcnow
+from app.db import Base, get_db, utcnow
 from app.domain import ALL_PERMISSIONS, MembershipStatus, Permission, Role
 from app.errors import Forbidden, NotFound, Unauthorized
 from app.models import Membership, Patient, User, UserSession
@@ -91,6 +91,18 @@ def load_access(db: Session, user: User, patient_id: int) -> PatientAccess:
     if membership is None:
         raise NotFound("We couldn't find that profile.")
     return PatientAccess(user=user, patient=membership.patient, membership=membership)
+
+
+def get_owned[ModelT: Base](
+    db: Session, model: type[ModelT], item_id: int, access: PatientAccess, noun: str
+) -> ModelT:
+    """Loads a patient-scoped record by id, or raises 404 if it is missing or belongs to
+    another care circle. Every child-record lookup goes through here, so a guessed id from
+    another circle can never be read or changed."""
+    item = db.get(model, item_id)
+    if item is None or getattr(item, "patient_id", None) != access.patient.id:
+        raise NotFound(f"That {noun} was not found.")
+    return item
 
 
 def patient_access(

@@ -11,7 +11,7 @@ function PermissionPicker({ value, onChange }: { value: Permission[]; onChange: 
   return (
     <fieldset>
       <legend>They can</legend>
-      <div className="form-grid two" style={{ gap: 0 }}>
+      <div className="form-grid two gap-0">
         {PERMISSION_ORDER.map(perm => (
           <Checkbox key={perm} label={PERMISSION_LABEL[perm]} checked={value.includes(perm)}
             onChange={() => onChange(value.includes(perm) ? value.filter(x => x !== perm) : [...value, perm])} />
@@ -104,10 +104,10 @@ export function CareTeamPage() {
         <div className="panel-head"><h2 id="members-h">People with access</h2>{overview?.my_permissions.includes('view_activity') && <Link className="small" to={`/p/${pid}/activity?category=access`}>Access history</Link>}</div>
         <ul className="list">
           {members.data!.map(m => (
-            <li key={m.id} className="spread" style={{ alignItems: 'flex-start' }}>
-              <div className="row" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+            <li key={m.id} className="spread items-start">
+              <div className="row items-start nowrap">
                 <span className="avatar" aria-hidden="true">{initials(m.full_name)}</span>
-                <div className="stack" style={{ gap: 4 }}>
+                <div className="stack gap-1">
                   <p><strong>{m.full_name}</strong>{m.is_me && ' (you)'} <span className="muted">{ROLE_LABEL[m.role]}{m.relationship_label && m.role !== 'elder' ? `, ${m.relationship_label}` : ''}</span></p>
                   <div className="row" style={{ gap: 6 }}>
                     {m.role === 'elder' && <Badge tone="info">Profile owner</Badge>}
@@ -148,7 +148,7 @@ export function CareTeamPage() {
         <section className="panel panel-pad stack" aria-labelledby="prefs-h">
           <h2 id="prefs-h">Emails you receive about {isElder ? 'yourself' : overview?.patient_name}</h2>
           <p className="muted small">Everything also appears in Notifications. Emails never include medicine names.</p>
-          <div className="form-grid two" style={{ gap: 0 }}>
+          <div className="form-grid two gap-0">
             {([['notify_dose_reminders', 'Dose reminders', 'An email when a dose is due'], ['notify_escalations', 'Unconfirmed doses', 'When a dose hasn’t been recorded after the grace period'],
               ['notify_appointments', 'Appointment reminders', 'Before each visit'], ['notify_low_stock', 'Refill warnings', 'When stock is estimated to run low']] as const).map(([k, label, desc]) => (
               <Checkbox key={k} label={label} description={desc} checked={me[k]} disabled={prefs.isPending}

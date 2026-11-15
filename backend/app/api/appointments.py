@@ -12,9 +12,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db, utcnow
-from app.deps import PatientAccess, requires
+from app.deps import PatientAccess, get_owned, requires
 from app.domain import AppointmentStatus, Permission
-from app.errors import AppError, Conflict, Forbidden, NotFound
+from app.errors import AppError, Conflict, Forbidden
 from app.models import Appointment, Patient, VisitQuestion
 from app.services import audit
 
@@ -99,10 +99,7 @@ def _to_utc(patient: Patient, d: date, t: time) -> datetime:
 
 
 def _get(db: Session, access: PatientAccess, appt_id: int) -> Appointment:
-    a = db.get(Appointment, appt_id)
-    if a is None or a.patient_id != access.patient.id:
-        raise NotFound("That appointment was not found.")
-    return a
+    return get_owned(db, Appointment, appt_id, access, "appointment")
 
 
 @router.get("/appointments", response_model=list[AppointmentOut])
@@ -345,9 +342,7 @@ def add_question(
 
 
 def _get_q(db: Session, access: PatientAccess, qid: int) -> VisitQuestion:
-    q = db.get(VisitQuestion, qid)
-    if q is None or q.patient_id != access.patient.id:
-        raise NotFound("That question was not found.")
+    q = get_owned(db, VisitQuestion, qid, access, "question")
     if not (access.is_elder or q.author_user_id == access.user.id):
         raise Forbidden("Only the author or the elder can change this question.")
     return q

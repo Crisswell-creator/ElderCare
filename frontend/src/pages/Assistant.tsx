@@ -63,9 +63,9 @@ export function AssistantPage() {
     <div className="page stack-lg" style={{ maxWidth: '52rem' }}>
       <PageHead title="Assistant" intro={`Questions about ${isElder ? 'your' : `${name}’s`} records, appointments and general health terms.`} />
       <section className="panel panel-pad stack" aria-label="About this assistant" style={{ gap: 'var(--s3)' }}>
-        <p className="row" style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'flex-start' }}><Lock size={18} aria-hidden="true" style={{ flex: 'none', marginTop: 3, color: 'var(--teal-700)' }} />
+        <p className="row gap-2 items-start nowrap"><Lock size={18} aria-hidden="true" style={{ flex: 'none', marginTop: 3, color: 'var(--teal-700)' }} />
           <span>Uses only what you're allowed to see: {i.sources.length ? i.sources.join(', ') : 'nothing yet'}. Answers come from {PROVIDER_LABEL[i.provider] ?? i.provider}. Conversations aren't saved.</span></p>
-        <p className="row small muted" style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'flex-start' }}><ShieldCheck size={18} aria-hidden="true" style={{ flex: 'none', marginTop: 2 }} /><span>{i.disclaimer} In an emergency, call your local emergency number.</span></p>
+        <p className="row small muted gap-2 items-start nowrap"><ShieldCheck size={18} aria-hidden="true" style={{ flex: 'none', marginTop: 2 }} /><span>{i.disclaimer} In an emergency, call your local emergency number.</span></p>
       </section>
 
       <section aria-label="Conversation" className="stack" aria-live="polite" aria-busy={busy}>
@@ -78,23 +78,23 @@ export function AssistantPage() {
         {turns.map((t, idx) => (
           <article key={idx} className={t.role === 'user' ? 'msg msg-user' : 'msg msg-ai'} aria-label={t.role === 'user' ? 'You asked' : 'Assistant answered'}>
             {t.reply?.safety === 'urgent' && <p className="row" style={{ gap: 6, color: 'var(--danger)', fontWeight: 700 }}><AlertTriangle size={18} aria-hidden="true" />This may be urgent</p>}
-            <p style={{ whiteSpace: 'pre-line' }}>{t.content}</p>
-            {t.reply?.safety === 'urgent' && <p style={{ marginTop: 8 }}><Link className="btn btn-danger" to={`/p/${pid}/emergency`}>Open emergency contacts</Link></p>}
+            <p className="pre-line">{t.content}</p>
+            {t.reply?.safety === 'urgent' && <p className="mt-2"><Link className="btn btn-danger" to={`/p/${pid}/emergency`}>Open emergency contacts</Link></p>}
             {t.reply && (
-              <p className="small muted" style={{ marginTop: 8 }}>
+              <p className="small muted mt-2">
                 {PROVIDER_LABEL[t.reply.provider] ?? t.reply.provider}{t.reply.sources.length > 0 && <> &nbsp;|&nbsp; Based on: {t.reply.sources.join(', ')}</>}
               </p>
             )}
             {t.reply?.notice && <p className="small" style={{ color: 'var(--warn)', marginTop: 4 }}>{t.reply.notice}</p>}
           </article>
         ))}
-        {busy && <p className="muted row" style={{ gap: 8 }}><span className="spinner" style={{ width: 16, height: 16 }} aria-hidden="true" />Looking at the records…</p>}
+        {busy && <p className="muted row gap-2"><span className="spinner" style={{ width: 16, height: 16 }} aria-hidden="true" />Looking at the records…</p>}
         <div ref={endRef} />
       </section>
 
       {error && <Alert tone="danger">{error}</Alert>}
       <form className="panel panel-pad stack" onSubmit={(e: FormEvent) => { e.preventDefault(); void ask(text) }} style={{ position: 'sticky', bottom: 'var(--s4)' }}>
-        <label htmlFor="ask" className="label" style={{ fontWeight: 600 }}>Your question</label>
+        <label htmlFor="ask" className="label semibold">Your question</label>
         <textarea id="ask" className="textarea" rows={2} maxLength={1000} value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void ask(text) } }} placeholder="For example: when is my next appointment?" />
         <div className="spread">

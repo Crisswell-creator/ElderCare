@@ -47,21 +47,21 @@ export function HomePage() {
           <div className="panel">
             <ul className="list">
               <li className="spread">
-                <div className="row" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <div className="row items-start nowrap">
                   <UserRound aria-hidden="true" style={{ color: 'var(--teal-700)', flex: 'none', marginTop: 4 }} />
                   <div><h2>For myself</h2><p className="muted">Keep track of your own medicines and appointments, and choose who can help.</p></div>
                 </div>
                 <Link className="btn btn-primary" to="/new-profile?mode=self">Set up my profile</Link>
               </li>
               <li className="spread">
-                <div className="row" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <div className="row items-start nowrap">
                   <KeyRound aria-hidden="true" style={{ color: 'var(--teal-700)', flex: 'none', marginTop: 4 }} />
                   <div><h2>I have an invitation code</h2><p className="muted">Someone you help gave you a code. They'll approve what you can see.</p></div>
                 </div>
                 <Link className="btn btn-secondary" to="/join">Enter code</Link>
               </li>
               <li className="spread">
-                <div className="row" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <div className="row items-start nowrap">
                   <UserPlus aria-hidden="true" style={{ color: 'var(--teal-700)', flex: 'none', marginTop: 4 }} />
                   <div><h2>On behalf of someone</h2><p className="muted">For a trusted representative, such as someone holding power of attorney, when the person can't set up an account themselves.</p></div>
                 </div>
@@ -80,7 +80,7 @@ export function HomePage() {
                   const d = c.doses_today
                   return (
                     <li key={c.patient_id} className="spread">
-                      <div className="stack" style={{ gap: 4 }}>
+                      <div className="stack gap-1">
                         <h2><Link to={`/p/${c.patient_id}/${c.role === 'elder' ? 'today' : 'overview'}`}>{c.patient_name}{c.role === 'elder' ? ' (me)' : ''}</Link></h2>
                         <p className="muted small">{ROLE_LABEL[c.role]}
                           {c.next_appointment && <> &nbsp;|&nbsp; Next visit {fmtDate(c.next_appointment.local_date)} at {fmtTime(c.next_appointment.local_time)}</>}
@@ -312,15 +312,15 @@ export function NotificationsPage() {
             {q.data.items.map(n => (
               <li key={n.id}>
                 <button type="button" onClick={() => open(n)} className="row-btn">
-                  <span className="stack" style={{ gap: 4 }}>
-                    <span className="row" style={{ gap: 8 }}>
+                  <span className="stack gap-1">
+                    <span className="row gap-2">
                       {!n.read && <span className="badge badge-info">New</span>}
                       <span className={`badge ${SEVERITY[n.severity][1]}`}>{SEVERITY[n.severity][0]}</span>
                       <strong style={{ color: 'var(--navy-800)' }}>{n.subject}</strong>
                     </span>
                     <span className="muted small">{n.body.split('\n\n')[0]}</span>
                   </span>
-                  <span className="muted small" style={{ textAlign: 'right' }}>
+                  <span className="muted small text-right">
                     {KIND_LABEL[n.kind] ?? n.kind}<br />{fmtRelative(n.created_at)} &nbsp;|&nbsp; {EMAIL_LABEL[n.email_status] ?? n.email_status}
                     {n.email_status === 'failed' && <><br /><span style={{ color: 'var(--danger)' }}>Email failed after {n.attempts} attempts</span></>}
                   </span>
