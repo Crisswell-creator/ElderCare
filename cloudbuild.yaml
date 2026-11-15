@@ -1,0 +1,46 @@
+# Google Cloud Build: test, build, push and deploy to Cloud Run.
+# Trigger: gcloud builds submit --config cloudbuild.yaml --substitutions=_REGION=europe-west2
+substitutions:
+  _REGION: europe-west2
+  _SERVICE: eldercare
+  _REPO: eldercare
+steps:
+  - id: backend-tests
+    name: ghcr.io/astral-sh/uv:0.9-python3.13-bookworm-slim
+    dir: backend
+    entrypoint: sh
+    args: ["-c", "uv sync --frozen && uv run ruff check . && uv run mypy app && uv run pytest -q"]
+  - id: frontend-checks
+    name: node:22-alpine
+    dir: frontend
+    entrypoint: sh
+    args: ["-c", "npm ci --no-audit --no-fund && npm run typecheck && npm test"]
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "-t", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA", "."]
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: ["push", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"]
+  - id: migrate
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args: ["run", "jobs", "deploy", "${_SERVICE}-migrate", "--region", "${_REGION}",
+           "--image", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
+           "--command", "alembic", "--args", "upgrade,head",
+           "--set-secrets", "DATABASE_URL=eldercare-database-url:latest,SECRET_KEY=eldercare-secret-key:latest",
+           "--set-env-vars", "ENVIRONMENT=production,APP_BASE_URL=https://placeholder.invalid,STORAGE_BACKEND=gcs,GCS_BUCKET=${PROJECT_ID}-eldercare-docs,JOB_TRIGGER_TOKEN=unused-by-migrations",
+           "--execute-now", "--wait"]
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args: ["run", "deploy", "${_SERVICE}", "--region", "${_REGION}",
+           "--image", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
+           "--service-account", "eldercare-run@$PROJECT_ID.iam.gserviceaccount.com",
+           "--allow-unauthenticated", "--min-instances", "0", "--max-instances", "3",
+           "--memory", "512Mi", "--cpu", "1",
+           "--set-secrets", "DATABASE_URL=eldercare-database-url:latest,SECRET_KEY=eldercare-secret-key:latest,SMTP_PASSWORD=eldercare-smtp-password:latest",
+           "--env-vars-file", "deploy/cloudrun.env.yaml"]
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+options:
+  logging: CLOUD_LOGGING_ONLY

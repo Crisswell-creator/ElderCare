@@ -1,0 +1,65 @@
+[project]
+name = "eldercare-api"
+version = "1.0.0"
+description = "ElderCare: shared elderly healthcare and medication management API"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy>=2.0.36",
+    "alembic>=1.14",
+    "pydantic-settings>=2.6",
+    "email-validator>=2.2",
+    "argon2-cffi>=23.1",
+    "python-multipart>=0.0.18",
+    "fpdf2>=2.8",
+    "tzdata>=2024.2",
+    "psycopg[binary]>=3.2",
+    "google-auth>=2.36",
+    "requests>=2.32",
+    "google-cloud-storage>=2.18",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "pip-audit>=2.7",
+    "httpx2>=2.16.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/F/W: pycodestyle+pyflakes, I: isort, B: bugbear, UP: pyupgrade, S: bandit security rules,
+# SIM: simplifications, RUF: ruff-specific, DTZ: naive-datetime bugs.
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "DTZ"]
+ignore = ["B008"]  # FastAPI's Depends() in defaults is the framework idiom
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107"]  # asserts and literal test passwords are expected in tests
+"alembic/**" = ["E501"]
+"app/services/email.py" = ["E501"]  # inline-styled HTML email template
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests"]
+known-third-party = ["alembic"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+exclude = ["alembic/"]
+
+[[tool.mypy.overrides]]
+module = ["fpdf.*", "google.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["error::DeprecationWarning:app.*"]
