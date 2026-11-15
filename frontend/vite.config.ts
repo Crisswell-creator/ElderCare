@@ -18,7 +18,7 @@ export default defineConfig({
         // Libraries change far less often than app code: a separate, content-hashed vendor
         // chunk stays cached in browsers across app deploys.
         advancedChunks: {
-          groups: [{ name: 'vendor', test: /node_modules[\/](react|react-dom|react-router|react-router-dom|@tanstack|scheduler)[\/]/ }],
+          groups: [{ name: 'vendor', test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|@tanstack|scheduler)[\\/]/ }],
         },
       },
     },

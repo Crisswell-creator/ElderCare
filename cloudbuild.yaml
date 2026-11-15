@@ -9,12 +9,12 @@ steps:
     name: ghcr.io/astral-sh/uv:0.9-python3.13-bookworm-slim
     dir: backend
     entrypoint: sh
-    args: ["-c", "uv sync --frozen --all-extras && uv run ruff check . && uv run mypy app && uv run pytest -q"]
+    args: ["-c", "uv sync --frozen --all-extras && uv run ruff check . && uv run mypy app && uv run pyright && uv run pytest -q"]
   - id: frontend-checks
     name: node:22-alpine
     dir: frontend
     entrypoint: sh
-    args: ["-c", "npm ci --no-audit --no-fund && npm run typecheck && npm test"]
+    args: ["-c", "npm ci --no-audit --no-fund && npm run typecheck && npm run lint && npm test"]
   - id: build
     name: gcr.io/cloud-builders/docker
     args: ["build", "-t", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA", "."]

@@ -234,7 +234,8 @@ def update_member(
             raise Forbidden("Only the elder can choose a trusted representative.")
         m.is_representative = body.is_representative
         if m.is_representative and Permission.MANAGE_CARE_TEAM not in (m.permissions or []):
-            m.permissions = sorted({*(m.permissions or []), Permission.MANAGE_CARE_TEAM.value})
+            granted: set[str] = {*(m.permissions or []), Permission.MANAGE_CARE_TEAM.value}
+            m.permissions = sorted(granted)
         details["is_representative"] = m.is_representative
     if details:
         audit.record(
@@ -266,7 +267,8 @@ def revoke_member(
         if m.is_representative and not access.is_elder:
             raise Forbidden("Only the elder can remove a trusted representative.")
     m.status = MembershipStatus.REVOKED
-    m.revoked_at = utcnow()
+    revoked_at = utcnow()
+    m.revoked_at = revoked_at
     m.is_representative = False
     summary = (
         f"{m.user.full_name} left the care circle"
@@ -287,7 +289,7 @@ def revoke_member(
             db,
             recipient=m.user,
             kind=NotificationKind.ACCESS_DECISION,
-            dedupe_key=f"revoked:{m.id}:{m.revoked_at.isoformat()}",
+            dedupe_key=f"revoked:{m.id}:{revoked_at.isoformat()}",
             subject="Your ElderCare access has changed",
             paragraphs=[
                 "Your access to a care profile in ElderCare has been removed by the profile owner."

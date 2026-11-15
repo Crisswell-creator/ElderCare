@@ -32,6 +32,7 @@ dev = [
     "mypy>=1.13",
     "pip-audit>=2.7",
     "httpx2>=2.16.0",
+    "pyright>=1.1.414",
 ]
 
 [tool.ruff]
@@ -63,6 +64,13 @@ exclude = ["alembic/"]
 [[tool.mypy.overrides]]
 module = ["fpdf.*", "google.*"]
 ignore_missing_imports = true
+
+[tool.pyright]
+# Same checker the VS Code Python extension (Pylance) uses, so editors show no problems.
+venvPath = "."
+venv = ".venv"
+include = ["app", "tests", "alembic", "scripts"]
+pythonVersion = "3.12"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

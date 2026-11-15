@@ -262,8 +262,9 @@ def _render(data: VisitData, lim: Limits) -> FPDF:
 
 
 def render(data: VisitData) -> bytes:
-    for lim in LEVELS:
-        pdf = _render(data, lim)
+    pdf = _render(data, LEVELS[0])
+    for lim in LEVELS[1:]:
         if pdf.page_no() == 1:
             break
+        pdf = _render(data, lim)
     return bytes(pdf.output())

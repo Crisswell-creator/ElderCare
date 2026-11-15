@@ -73,8 +73,8 @@ falling back to the default in `backend/app/seed_demo.py`. Emails are printed to
 ## Checks
 
 ```bash
-cd backend && uv run pytest && uv run ruff check . && uv run mypy app && uv run pip-audit
-cd frontend && npm run typecheck && npm test && npx oxlint src && npm audit && npm run e2e
+cd backend && uv run pytest && uv run ruff check . && uv run mypy app && uv run pyright && uv run pip-audit
+cd frontend && npm run typecheck && npm run lint && npm test && npm audit && npm run e2e
 ```
 
 Results from the last run are recorded in [docs/TESTING.md](docs/TESTING.md) and
