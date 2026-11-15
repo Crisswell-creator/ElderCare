@@ -27,7 +27,13 @@
   "crons": [
     {
       "path": "/internal/jobs/tick",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 8 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/app/**",
+      "maxDuration": 30
+    }
+  }
 }

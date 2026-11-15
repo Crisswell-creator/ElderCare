@@ -381,3 +381,34 @@ def test_unhandled_errors_return_generic_message(monkeypatch):
     monkeypatch.setattr(notifications, "select", boom)
     res = client.get("/api/notifications")
     assert res.status_code == 500 and "secret" not in res.text
+
+
+def test_db_storage_backend_round_trip(circle, monkeypatch):
+    """STORAGE_BACKEND=db (used on Vercel) stores and serves bytes through the same API."""
+    from app.services import storage
+
+    monkeypatch.setattr(storage, "_storage", storage.DbStorage())
+    pid = circle.pid
+    up = circle.elder.client.post(
+        f"/api/patients/{pid}/documents",
+        data={"title": "Scan", "category": "other"},
+        files={"file": ("scan.pdf", PDF_BYTES, "application/pdf")},
+        headers=circle.elder._headers(),
+    )
+    assert up.status_code == 201
+    dl = circle.elder.get(f"/api/patients/{pid}/documents/{up.json()['id']}/download")
+    assert dl.content == PDF_BYTES
+
+
+def test_vercel_cron_secret_authorises_get_tick(monkeypatch):
+    from app.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "cron_secret", "cron-test-secret")
+    api = Api()
+    assert api.client.get("/internal/jobs/tick").status_code == 401
+    assert (
+        api.client.get("/internal/jobs/tick", headers={"Authorization": "Bearer wrong"}).status_code
+        == 401
+    )
+    ok = api.client.get("/internal/jobs/tick", headers={"Authorization": "Bearer cron-test-secret"})
+    assert ok.status_code == 200 and "delivery" in ok.json()

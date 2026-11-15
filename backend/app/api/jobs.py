@@ -48,6 +48,12 @@ def authorize_job(request: Request) -> None:
         )
     ):
         return
+    if (
+        settings.cron_secret
+        and auth.startswith("Bearer ")
+        and constant_time_equals(auth.removeprefix("Bearer "), settings.cron_secret)
+    ):
+        return  # Vercel Cron
     shared = request.headers.get("x-job-token", "")
     if (
         settings.job_trigger_token
@@ -59,6 +65,7 @@ def authorize_job(request: Request) -> None:
     raise Unauthorized("Not allowed.")
 
 
+@router.get("/tick", dependencies=[Depends(authorize_job)])  # Vercel Cron uses GET
 @router.post("/tick", dependencies=[Depends(authorize_job)])
 def run_tick(db: Session = Depends(get_db)) -> dict[str, object]:
     report = tick(db, utcnow())

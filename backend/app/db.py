@@ -9,6 +9,7 @@ from typing import Any
 from sqlalchemy import DateTime, MetaData, create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.pool import NullPool
 from sqlalchemy.types import TypeDecorator
 
 from app.config import get_settings
@@ -68,6 +69,12 @@ def make_engine(url: str) -> Engine:
 
         return engine
     # pool_pre_ping runs a real round-trip before reuse; connect_timeout bounds the driver itself
+    if get_settings().db_pool == "null":
+        # Serverless: each invocation opens a short-lived connection through the provider's
+        # transaction pooler, which does not support server-side prepared statements.
+        return create_engine(
+            url, poolclass=NullPool, connect_args={"connect_timeout": 5, "prepare_threshold": None}
+        )
     return create_engine(
         url,
         pool_pre_ping=True,

@@ -42,7 +42,9 @@ class Settings(BaseSettings):
     email_max_attempts: int = 5
 
     # Documents
-    storage_backend: Literal["local", "gcs"] = "local"
+    # "db" keeps document bytes in PostgreSQL: durable on serverless hosts (Vercel) with no
+    # extra service. "gcs" uses a private Cloud Storage bucket.
+    storage_backend: Literal["local", "gcs", "db"] = "local"
     local_storage_dir: str = "./var/documents"
     gcs_bucket: str = ""
     max_upload_bytes: int = 10 * 1024 * 1024
@@ -50,6 +52,11 @@ class Settings(BaseSettings):
     # Scheduled jobs. Cloud Scheduler calls /internal/jobs/tick with an OIDC token
     # (jobs_oidc_audience) or, in development, a shared token header.
     job_trigger_token: str = ""
+    # Vercel Cron sends "Authorization: Bearer $CRON_SECRET".
+    cron_secret: str = ""
+    # "null" disables client-side pooling for serverless functions that sit behind a
+    # transaction pooler (Supabase Supavisor, PgBouncer).
+    db_pool: Literal["queue", "null"] = "queue"
     jobs_oidc_audience: str = ""
     jobs_oidc_service_account: str = ""
     run_inprocess_scheduler: bool = False
@@ -99,8 +106,8 @@ class Settings(BaseSettings):
         if self.storage_backend == "gcs" and not self.gcs_bucket:
             problems.append("GCS_BUCKET is required for STORAGE_BACKEND=gcs")
         if self.storage_backend == "local":
-            problems.append("STORAGE_BACKEND=local is not durable on Cloud Run; use gcs")
-        if not (self.jobs_oidc_audience or self.job_trigger_token):
+            problems.append("STORAGE_BACKEND=local is not durable on serverless; use gcs or db")
+        if not (self.jobs_oidc_audience or self.job_trigger_token or self.cron_secret):
             problems.append(
                 "Set JOBS_OIDC_AUDIENCE (or JOB_TRIGGER_TOKEN) to protect job endpoints"
             )

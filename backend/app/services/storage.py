@@ -47,6 +47,28 @@ class GcsStorage:
         return bytes(self.bucket.blob(key).download_as_bytes())
 
 
+class DbStorage:
+    """Stores bytes in PostgreSQL (document_blobs). Files are capped at MAX_UPLOAD_BYTES."""
+
+    def save(self, key: str, data: bytes, content_type: str) -> None:
+        from app.db import SessionLocal
+        from app.models import DocumentBlob
+
+        with SessionLocal() as db:
+            db.add(DocumentBlob(storage_key=key, content_type=content_type, data=data))
+            db.commit()
+
+    def load(self, key: str) -> bytes:
+        from app.db import SessionLocal
+        from app.models import DocumentBlob
+
+        with SessionLocal() as db:
+            blob = db.get(DocumentBlob, key)
+            if blob is None:
+                raise FileNotFoundError(key)
+            return bytes(blob.data)
+
+
 _storage: Storage | None = None
 
 
@@ -54,9 +76,10 @@ def get_storage() -> Storage:
     global _storage
     if _storage is None:
         settings = get_settings()
-        _storage = (
-            GcsStorage(settings.gcs_bucket)
-            if settings.storage_backend == "gcs"
-            else LocalStorage(settings.local_storage_dir)
-        )
+        if settings.storage_backend == "gcs":
+            _storage = GcsStorage(settings.gcs_bucket)
+        elif settings.storage_backend == "db":
+            _storage = DbStorage()
+        else:
+            _storage = LocalStorage(settings.local_storage_dir)
     return _storage

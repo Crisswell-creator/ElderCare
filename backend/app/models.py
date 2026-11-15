@@ -14,6 +14,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     Numeric,
     String,
     Text,
@@ -523,3 +524,14 @@ class CareNote(Base):
     )
 
     author: Mapped[User | None] = relationship(lazy="joined")
+
+
+class DocumentBlob(Base):
+    """Document bytes for STORAGE_BACKEND=db. Read only through the authorised download API."""
+
+    __tablename__ = "document_blobs"
+
+    storage_key: Mapped[str] = mapped_column(String(300), primary_key=True)
+    content_type: Mapped[str] = mapped_column(String(64))
+    data: Mapped[bytes] = mapped_column(LargeBinary)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=now_default)
