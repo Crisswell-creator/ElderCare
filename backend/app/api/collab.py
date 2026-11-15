@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db, utcnow
 from app.deps import PatientAccess, patient_access
-from app.domain import NotificationKind, Permission
+from app.domain import MembershipStatus, NotificationKind, Permission
 from app.errors import AppError, Forbidden, NotFound, TooManyRequests
 from app.models import Appointment, CareNote, CareTask, Membership, Notification
 from app.services import audit, notify
@@ -104,7 +104,7 @@ def _check_assignee(db: Session, access: PatientAccess, user_id: int | None) -> 
         select(Membership.id).where(
             Membership.patient_id == access.patient.id,
             Membership.user_id == user_id,
-            Membership.status == "active",
+            Membership.status == MembershipStatus.ACTIVE,
         )
     )
     if ok is None:
@@ -483,11 +483,11 @@ def send_help_alert(
     members = db.scalars(
         select(Membership).where(
             Membership.patient_id == access.patient.id,
-            Membership.status == "active",
+            Membership.status == MembershipStatus.ACTIVE,
             Membership.user_id != access.user.id,
         )
     ).all()
-    name = access.patient.preferred_name or access.patient.full_name.split(" ")[0]
+    name = access.patient.first_name
     emailed = 0
     stamp = now.isoformat()
     for m in members:

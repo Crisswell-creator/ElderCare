@@ -127,7 +127,7 @@ def build_context(db: Session, access: PatientAccess, today: date) -> Context:
     p = access.patient
     pid = p.id
     sections: dict[str, str] = {}
-    name = p.preferred_name or p.full_name.split(" ")[0]
+    name = p.first_name
     if access.can(Permission.VIEW_PROFILE):
         lines = [f"Name: {p.full_name} (called {name})"]
         if p.date_of_birth:

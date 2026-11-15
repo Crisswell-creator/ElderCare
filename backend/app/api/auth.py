@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.db import get_db, utcnow
 from app.deps import get_current_session, get_current_user
+from app.domain import MembershipStatus
 from app.errors import AppError, Conflict, Unauthorized
 from app.models import AuthToken, Membership, User, UserSession
 from app.security import hash_password, hash_token, needs_rehash, new_token, verify_password
@@ -400,7 +401,7 @@ def my_memberships(
 ) -> list[MembershipOut]:
     rows = db.scalars(
         select(Membership)
-        .where(Membership.user_id == user.id, Membership.status == "active")
+        .where(Membership.user_id == user.id, Membership.status == MembershipStatus.ACTIVE)
         .order_by(Membership.created_at)
     ).all()
     return [

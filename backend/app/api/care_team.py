@@ -16,6 +16,7 @@ from app.db import get_db, utcnow
 from app.deps import PatientAccess, get_current_user, patient_access
 from app.domain import (
     SUGGESTED,
+    MembershipStatus,
     NotificationKind,
     Permission,
     RequestStatus,
@@ -137,7 +138,7 @@ def _has_elder(db: Session, patient_id: int) -> bool:
             select(Membership.id).where(
                 Membership.patient_id == patient_id,
                 Membership.role == Role.ELDER,
-                Membership.status == "active",
+                Membership.status == MembershipStatus.ACTIVE,
             )
         )
         is not None
@@ -146,7 +147,9 @@ def _has_elder(db: Session, patient_id: int) -> bool:
 
 def _deciders(db: Session, patient_id: int) -> list[Membership]:
     rows = db.scalars(
-        select(Membership).where(Membership.patient_id == patient_id, Membership.status == "active")
+        select(Membership).where(
+            Membership.patient_id == patient_id, Membership.status == MembershipStatus.ACTIVE
+        )
     ).all()
     return [
         m
@@ -184,7 +187,9 @@ def list_members(
 ) -> list[MemberOut]:
     rows = db.scalars(
         select(Membership)
-        .where(Membership.patient_id == access.patient.id, Membership.status == "active")
+        .where(
+            Membership.patient_id == access.patient.id, Membership.status == MembershipStatus.ACTIVE
+        )
         .order_by(Membership.created_at)
     ).all()
     return [_member_out(m, access.user) for m in rows]
@@ -192,7 +197,7 @@ def list_members(
 
 def _get_member(db: Session, access: PatientAccess, member_id: int) -> Membership:
     m = db.get(Membership, member_id)
-    if m is None or m.patient_id != access.patient.id or m.status != "active":
+    if m is None or m.patient_id != access.patient.id or m.status != MembershipStatus.ACTIVE:
         raise NotFound("That person is not in this care circle.")
     return m
 
@@ -260,7 +265,7 @@ def revoke_member(
         _require_decider(access)
         if m.is_representative and not access.is_elder:
             raise Forbidden("Only the elder can remove a trusted representative.")
-    m.status = "revoked"
+    m.status = MembershipStatus.REVOKED
     m.revoked_at = utcnow()
     m.is_representative = False
     summary = (
@@ -439,7 +444,7 @@ def redeem_invitation(
         select(Membership).where(
             Membership.patient_id == inv.patient_id,
             Membership.user_id == user.id,
-            Membership.status == "active",
+            Membership.status == MembershipStatus.ACTIVE,
         )
     )
     if existing:
@@ -585,7 +590,7 @@ def decide_request(
             m = Membership(patient_id=patient.id, user_id=req.requester_user_id)
             db.add(m)
         m.role = role
-        m.status = "active"
+        m.status = MembershipStatus.ACTIVE
         m.revoked_at = None
         m.permissions = perms
         m.is_representative = False

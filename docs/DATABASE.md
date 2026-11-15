@@ -17,6 +17,8 @@ uv run alembic revision --autogenerate -m "describe change"
 |---|---|
 | 0001 | Initial schema, plus append-only triggers on `audit_events` (PL/pgSQL on PostgreSQL, `RAISE(ABORT)` on SQLite) |
 | 0002 | `medications.schedule_anchor_at`, with a server default so existing rows migrate safely |
+| 0004 | `document_blobs` for STORAGE_BACKEND=db (Vercel) |
+| 0005 | index (recipient_user_id, read_at) on notifications for the unread badge |
 | 0003 | `care_tasks`, `care_notes`, `users.preferences` (JSON), `emergency_contacts.priority`, all with server defaults; verified on SQLite and PostgreSQL 17 |
 
 Verified: upgrade, downgrade and upgrade again on SQLite; `alembic check` reports no drift; the

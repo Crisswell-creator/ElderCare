@@ -21,6 +21,7 @@ from app.domain import (
     AppointmentStatus,
     DoseStatus,
     MedicationStatus,
+    MembershipStatus,
     NotificationKind,
     Permission,
     Role,
@@ -47,7 +48,7 @@ def _members(db: Session, patient_ids: set[int]) -> dict[int, list[Membership]]:
     if patient_ids:
         for m in db.scalars(
             select(Membership).where(
-                Membership.patient_id.in_(patient_ids), Membership.status == "active"
+                Membership.patient_id.in_(patient_ids), Membership.status == MembershipStatus.ACTIVE
             )
         ):
             out[m.patient_id].append(m)
@@ -59,7 +60,7 @@ def _can(m: Membership, perm: Permission) -> bool:
 
 
 def _first_name(p: Patient) -> str:
-    return p.preferred_name or p.full_name.split(" ")[0]
+    return p.first_name
 
 
 def _clock(at: datetime, tz: str) -> str:

@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.db import get_db, utcnow
-from app.domain import ALL_PERMISSIONS, Permission, Role
+from app.domain import ALL_PERMISSIONS, MembershipStatus, Permission, Role
 from app.errors import Forbidden, NotFound, Unauthorized
 from app.models import Membership, Patient, User, UserSession
 from app.security import hash_token
@@ -85,7 +85,7 @@ def load_access(db: Session, user: User, patient_id: int) -> PatientAccess:
         select(Membership).where(
             Membership.patient_id == patient_id,
             Membership.user_id == user.id,
-            Membership.status == "active",
+            Membership.status == MembershipStatus.ACTIVE,
         )
     )
     if membership is None:

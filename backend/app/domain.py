@@ -5,6 +5,11 @@ from __future__ import annotations
 from enum import StrEnum
 
 
+class MembershipStatus(StrEnum):
+    ACTIVE = "active"
+    REVOKED = "revoked"
+
+
 class Role(StrEnum):
     ELDER = "elder"
     FAMILY = "family"

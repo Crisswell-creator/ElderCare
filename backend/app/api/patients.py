@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.api.auth import TimeZone
 from app.db import Base, get_db
 from app.deps import PatientAccess, get_current_user, patient_access, requires
-from app.domain import SUGGESTED, Permission, Role
+from app.domain import SUGGESTED, MembershipStatus, Permission, Role
 from app.errors import Conflict, NotFound
 from app.models import Allergy, Doctor, EmergencyContact, HistoryEntry, Membership, Patient, User
 from app.services import audit
@@ -196,7 +196,7 @@ def create_patient(
             select(Membership.id).where(
                 Membership.user_id == user.id,
                 Membership.role == Role.ELDER,
-                Membership.status == "active",
+                Membership.status == MembershipStatus.ACTIVE,
             )
         )
         if existing:

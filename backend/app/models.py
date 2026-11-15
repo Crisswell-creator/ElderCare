@@ -114,6 +114,11 @@ class Patient(Base):
         UTCDateTime(), default=now_default, onupdate=now_default
     )
 
+    @property
+    def first_name(self) -> str:
+        """How the elder is addressed in messages: preferred name, else first given name."""
+        return self.preferred_name or self.full_name.split(" ")[0]
+
 
 class Membership(Base):
     """A user's place in one elder's care circle, with explicit permissions."""
@@ -427,6 +432,8 @@ class Notification(Base):
     __table_args__ = (
         Index("ix_notifications_status_next", "status", "next_attempt_at"),
         Index("ix_notifications_recipient_created", "recipient_user_id", "created_at"),
+        # Unread count for the notification bell, polled by every signed-in screen.
+        Index("ix_notifications_recipient_unread", "recipient_user_id", "read_at"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)

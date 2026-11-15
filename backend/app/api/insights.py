@@ -16,7 +16,14 @@ from app.api.appointments import AppointmentOut, appt_out
 from app.api.medications import DoseOut, dose_out, local_today, med_out, refresh_patient_doses
 from app.db import get_db, utcnow
 from app.deps import PatientAccess, get_current_user, patient_access, requires
-from app.domain import AppointmentStatus, DoseStatus, MedicationStatus, Permission, RequestStatus
+from app.domain import (
+    AppointmentStatus,
+    DoseStatus,
+    MedicationStatus,
+    MembershipStatus,
+    Permission,
+    RequestStatus,
+)
 from app.errors import AppError
 from app.models import (
     AccessRequest,
@@ -335,7 +342,9 @@ def my_overview(
     """Summary of every care circle the user belongs to, for the caregiver/family home.
     Uses a fixed number of grouped queries regardless of how many patients there are."""
     memberships = db.scalars(
-        select(Membership).where(Membership.user_id == user.id, Membership.status == "active")
+        select(Membership).where(
+            Membership.user_id == user.id, Membership.status == MembershipStatus.ACTIVE
+        )
     ).all()
     if not memberships:
         return []
