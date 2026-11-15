@@ -70,7 +70,7 @@ def deliver_pending(db: Session, now: datetime, limit: int = 50) -> dict[str, in
         )
         .order_by(Notification.next_attempt_at)
         .limit(limit)
-        .with_for_update(skip_locked=True)  # parallel ticks never send the same row
+        .with_for_update(skip_locked=True, of=Notification)  # lock only outbox rows
     ).all()
     stats = {"sent": 0, "retrying": 0, "failed": 0}
     for note in rows:
