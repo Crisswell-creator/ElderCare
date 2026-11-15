@@ -36,7 +36,7 @@ These are honest self-assessments with evidence. No scores are claimed. Commands
 
 ## 4. Testing
 - **Verify:** `uv run pytest --cov=app`; `npm test`; `npm run e2e`
-- **Evidence:** backend 80 passed (90% coverage); frontend unit 11 passed; end-to-end 16 passed,
+- **Evidence:** backend 81 passed (90% coverage); frontend unit 11 passed; end-to-end 16 passed,
   covering the 15 product scenarios plus a phone viewport. Migrations and triggers verified on
   PostgreSQL 17.
 - **Deficiencies:** Journey 4's escalation is tested in the backend with a controlled clock

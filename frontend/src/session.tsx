@@ -34,6 +34,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useSession()
   const loc = useLocation()
+  // No sign-in hint cookie: this browser has no session, so go to sign-in now rather than
+  // waiting for the session check (slow on a cold start). The hint grants no access.
+  if (loading && !document.cookie.includes('ec_hint=')) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />
   if (loading) return <div className="page"><Skeleton /></div>
   if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />
   return <>{children}</>

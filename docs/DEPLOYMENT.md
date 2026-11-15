@@ -1,4 +1,24 @@
-# Deployment: Google Cloud Run
+# Deployment
+
+## Live deployment: Vercel + Supabase (current)
+
+Production: https://eldercare-steel-kappa.vercel.app
+
+| Part | Setup |
+|---|---|
+| Frontend | Vite build served from Vercel's CDN (`vercel.json`: `buildCommand`, `outputDirectory`, SPA rewrite, one-year immutable cache for `/assets/*`) |
+| API | `api/index.py` (Vercel Python function in `bom1`) imports `backend/app`; `includeFiles` bundles the backend and PDF fonts; `requirements.txt` holds only the slim core dependencies |
+| Database | Supabase PostgreSQL (Mumbai), dedicated role and `eldercare` schema (not exposed to Supabase's auto-API), transaction pooler on port 6543, `DB_POOL=null` |
+| Documents | `STORAGE_BACKEND=db` (bytes in `document_blobs`) |
+| Reminders | Supabase `pg_cron` + `pg_net` POST `/internal/jobs/tick` every 5 minutes with `X-Job-Token`; a daily Vercel Cron (`CRON_SECRET`) is a backstop, because the Hobby plan allows only daily crons |
+| Migrations | Run from a workstation: `DATABASE_URL=<session pooler, port 5432> uv run alembic upgrade head` |
+| Redeploy | `vercel deploy --prod --scope be-tu-x` (or push to `main` if Git is connected) |
+
+Environment variables (set in the Vercel project): `ENVIRONMENT`, `APP_BASE_URL`, `DATABASE_URL`, `DB_POOL`,
+`SECRET_KEY`, `CRON_SECRET`, `JOB_TRIGGER_TOKEN`, `STORAGE_BACKEND`, `EMAIL_TRANSPORT`, `AI_PROVIDER`.
+See ENVIRONMENT_VARIABLES.md for meanings.
+
+# Deployment: Google Cloud Run (alternative)
 
 **Status: not deployed yet.** Everything below is ready to run. It needs a Google Cloud project
 with billing enabled, the `gcloud` CLI, and your approval, because the commands create billable

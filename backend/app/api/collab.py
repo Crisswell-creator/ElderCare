@@ -239,10 +239,9 @@ def set_task_status(
     db: Session = Depends(get_db),
 ) -> TaskOut:
     t = _get_task(db, access, task_id)
-    allowed = (
-        _can_manage_tasks(access)
-        or t.assignee_user_id == access.user.id
-        or t.created_by_user_id == access.user.id
+    allowed = _can_manage_tasks(access) or access.user.id in (
+        t.assignee_user_id,
+        t.created_by_user_id,
     )
     if not allowed:
         raise Forbidden(

@@ -22,6 +22,7 @@ from app.services import throttle
 from app.services.email import send_now
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+HINT_COOKIE = "ec_hint"
 
 _COMMON = {
     "password123",
@@ -157,6 +158,18 @@ def _start_session(db: Session, response: Response, user: User, request: Request
         samesite="lax",
         path="/",
     )
+    # Non-secret UI hint ("this browser has signed in"). It grants nothing; it only lets the
+    # SPA show the sign-in page immediately for signed-out visitors instead of waiting for a
+    # session check on a cold serverless start.
+    response.set_cookie(
+        HINT_COOKIE,
+        "1",
+        max_age=settings.session_ttl_hours * 3600,
+        httponly=False,
+        secure=settings.cookie_secure,
+        samesite="lax",
+        path="/",
+    )
 
 
 def _issue_token(db: Session, user: User, purpose: str, hours: int) -> str:
@@ -278,6 +291,7 @@ def logout(
     db.commit()
     response.status_code = status.HTTP_204_NO_CONTENT
     response.delete_cookie(get_settings().session_cookie_name, path="/")
+    response.delete_cookie(HINT_COOKIE, path="/")
     return response
 
 

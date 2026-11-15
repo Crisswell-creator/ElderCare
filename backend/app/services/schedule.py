@@ -63,7 +63,7 @@ def occurrences(
 
 def daily_use(slots: list[Slot], dose_amount: Decimal) -> Decimal:
     """Average units consumed per day by the schedule (a weekly pattern averaged over 7)."""
-    doses_per_week = sum(bin(s.days_mask & ALL_DAYS).count("1") for s in slots)
+    doses_per_week = sum((s.days_mask & ALL_DAYS).bit_count() for s in slots)
     return (dose_amount * doses_per_week / Decimal(7)).quantize(Decimal("0.0001"))
 
 

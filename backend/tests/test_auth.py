@@ -169,3 +169,19 @@ def test_session_endpoint_never_401s_and_profile_updates_validate():
     api = register("Ida")
     assert api.patch("/api/auth/me", {"text_scale": "huge"}).status_code == 422
     assert api.patch("/api/auth/me", {"text_scale": "xlarge"}).json()["text_scale"] == "xlarge"
+
+
+def test_sign_in_hint_cookie_is_set_on_login_and_cleared_on_logout():
+    register("Hint User", email="hint@example.com", password="hint pass phrase")
+    api = Api()
+    res = api.post("/api/auth/login", {"email": "hint@example.com", "password": "hint pass phrase"})
+    hint = [c for c in res.headers.get_list("set-cookie") if c.startswith("ec_hint=")]
+    assert hint and "HttpOnly" not in hint[0]  # readable by the SPA, holds no secret
+    out = api.post("/api/auth/logout")
+    assert any(
+        c.startswith("ec_hint=") and "Max-Age=0" in c for c in out.headers.get_list("set-cookie")
+    )
+    # the hint alone grants nothing
+    stranger = Api()
+    stranger.client.cookies.set("ec_hint", "1")
+    assert stranger.get("/api/auth/memberships").status_code == 401

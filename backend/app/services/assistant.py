@@ -288,7 +288,7 @@ class OfflineProvider:
     def __init__(self, ctx: Context) -> None:
         self.ctx = ctx
 
-    def answer(self, system: str, history: list[dict[str, str]], message: str) -> str:
+    def answer(self, system: str, history: list[dict[str, str]], message: str) -> str:  # noqa: ARG002 - Provider protocol signature
         q = message.lower()
         s = self.ctx.sections
         for term, text in GLOSSARY.items():

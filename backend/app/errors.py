@@ -83,7 +83,7 @@ def install_error_handlers(app: FastAPI) -> None:
         return JSONResponse(_body(code, str(exc.detail)), status_code=exc.status_code)
 
     @app.exception_handler(Exception)
-    async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
+    async def _unhandled(request: Request, _exc: Exception) -> JSONResponse:
         logger.exception("unhandled error on %s %s", request.method, request.url.path)
         return JSONResponse(
             _body("internal_error", "Something went wrong on our side. Please try again."),

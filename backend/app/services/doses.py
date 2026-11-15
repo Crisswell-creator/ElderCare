@@ -159,7 +159,7 @@ def mark_taken(db: Session, dose: DoseEvent, actor: User, actor_role: str, now: 
         note="Dose taken",
         dose_event_id=dose.id,
     )
-    suppress_alerts_if_resolved(db, dose, now)
+    suppress_alerts_if_resolved(db, dose)
 
 
 def mark_skipped(
@@ -173,7 +173,7 @@ def mark_skipped(
     dose.skip_reason = reason.strip()[:200]
     dose.status_changed_at = now
     dose.snoozed_until = None
-    suppress_alerts_if_resolved(db, dose, now)
+    suppress_alerts_if_resolved(db, dose)
 
 
 def undo(
@@ -262,7 +262,7 @@ def record_as_needed(
     return dose
 
 
-def suppress_alerts_if_resolved(db: Session, dose: DoseEvent, now: datetime) -> None:
+def suppress_alerts_if_resolved(db: Session, dose: DoseEvent) -> None:
     """When every dose in a reminder slot is resolved, queued-but-unsent reminder and
     escalation emails for that slot are withdrawn, so nobody is alerted after the fact."""
     open_left = db.scalar(

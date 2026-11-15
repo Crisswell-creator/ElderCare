@@ -17,7 +17,7 @@ the app refuses to start on an insecure combination, and lists every problem it 
 | `SMTP_PASSWORD` | empty | Secret Manager | |
 | `SMTP_STARTTLS` | `true` | | |
 | `EMAIL_MAX_ATTEMPTS` | `5` | | Attempts before a notification is marked `failed` |
-| `STORAGE_BACKEND` | `local` | `gcs` | `local` is refused in production (not durable on Cloud Run) |
+| `STORAGE_BACKEND` | `local` | `gcs` or `db` | `db` stores documents in PostgreSQL (used on Vercel); `local` is refused in production |
 | `LOCAL_STORAGE_DIR` | `./var/documents` | | |
 | `GCS_BUCKET` | empty | required | Private bucket; the Cloud Run service account needs `roles/storage.objectAdmin` on it |
 | `MAX_UPLOAD_BYTES` | `10485760` | | |
@@ -35,6 +35,8 @@ the app refuses to start on an insecure combination, and lists every problem it 
 | `AI_TIMEOUT_SECONDS` | `20` | | |
 | `AI_MAX_OUTPUT_TOKENS` | `700` | | 64 to 4096 |
 | `AI_REQUESTS_PER_WINDOW` / `AI_WINDOW_MINUTES` | `20` / `10` | | Per-user quota |
+| `DB_POOL` | `queue` | `null` on serverless | `null` = no client pool, no prepared statements (for transaction poolers) |
+| `CRON_SECRET` | empty | Vercel | Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` |
 | `LOG_LEVEL` | `INFO` | | |
 | `GOOGLE_CLOUD_PROJECT` | set by Cloud Run | | Used to format trace ids for Cloud Logging |
 | `DEMO_PASSWORD`, `ALLOW_DEMO_SEED` | | never set | Only for `python -m app.seed_demo` |

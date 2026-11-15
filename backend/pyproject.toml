@@ -40,12 +40,13 @@ target-version = "py312"
 
 [tool.ruff.lint]
 # E/F/W: pycodestyle+pyflakes, I: isort, B: bugbear, UP: pyupgrade, S: bandit security rules,
-# SIM: simplifications, RUF: ruff-specific, DTZ: naive-datetime bugs.
-select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "DTZ"]
+# SIM: simplifications, RUF: ruff-specific, DTZ: naive-datetime bugs, C4/PIE/RET/PERF/FURB:
+# idiomatic and efficient constructs, ARG: unused arguments.
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "DTZ", "C4", "PIE", "RET", "PERF", "FURB", "ARG"]
 ignore = ["B008"]  # FastAPI's Depends() in defaults is the framework idiom
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106", "S107"]  # asserts and literal test passwords are expected in tests
+"tests/**" = ["S101", "S105", "S106", "S107", "ARG"]  # fixtures are often used for side effects  # asserts and literal test passwords are expected in tests
 "alembic/**" = ["E501"]
 "app/services/email.py" = ["E501"]  # inline-styled HTML email template
 

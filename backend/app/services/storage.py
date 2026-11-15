@@ -25,7 +25,7 @@ class LocalStorage:
             raise ValueError("invalid storage key")
         return path
 
-    def save(self, key: str, data: bytes, content_type: str) -> None:
+    def save(self, key: str, data: bytes, content_type: str) -> None:  # noqa: ARG002 - Storage protocol
         path = self._path(key)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)

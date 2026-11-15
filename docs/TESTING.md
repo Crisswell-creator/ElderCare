@@ -23,7 +23,7 @@ Design rules applied to the tests:
 
 | Check | Command | Result |
 |---|---|---|
-| Backend tests | `cd backend && uv run pytest` | **80 passed** |
+| Backend tests | `cd backend && uv run pytest` | **81 passed** |
 | Backend coverage | `uv run pytest --cov=app` | **90%** statements |
 | Lint | `uv run ruff check .` | clean |
 | Format | `uv run ruff format --check .` | clean |
