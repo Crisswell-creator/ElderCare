@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query'
 import { AlertTriangle, Lock, Mic, Send, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api, p, type AssistantInfo, type AssistantReply } from '../api'
-import { usePatient } from '../session'
-import { Alert, Button, ErrorState, PageHead, Skeleton, errorText } from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Button, ErrorState, PageHead, Skeleton } from '../ui'
+import { errorText } from '../lib'
 
 interface Turn { role: 'user' | 'assistant'; content: string; reply?: AssistantReply }
 

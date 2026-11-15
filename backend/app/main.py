@@ -13,6 +13,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
@@ -73,6 +74,8 @@ def create_app() -> FastAPI:
         openapi_url=None if settings.is_production else "/api/openapi.json",
     )
     install_error_handlers(app)
+    # Compress JSON and CSV responses over 1 KB (dashboards, lists, exports).
+    app.add_middleware(GZipMiddleware, minimum_size=1024)
 
     if settings.cors_origins:
         app.add_middleware(

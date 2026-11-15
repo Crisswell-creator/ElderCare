@@ -63,6 +63,9 @@ def database(tmp_path: Path) -> Iterator[None]:
     app_db.SessionLocal.configure(bind=engine)
     memory_outbox.messages.clear()
     memory_outbox.fail_next = 0
+    from app.api import medications
+
+    medications._last_refresh.clear()  # per-process memo; each test has a fresh database
     yield
     engine.dispose()
 

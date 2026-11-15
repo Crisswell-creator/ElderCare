@@ -10,7 +10,7 @@ These are honest self-assessments with evidence. No scores are claimed. Commands
 - **Files:** `backend/app/{api,services}`, `frontend/src/{ui.tsx,styles.css,pages}`
 - **Verify:** `uv run ruff check . && uv run ruff format --check . && uv run mypy app`; `npm run typecheck && npx oxlint src`
 - **Evidence:** ruff clean; mypy strict: 0 issues in 37 files; tsc strict clean; oxlint 0 errors.
-- **Deficiencies:** 3 oxlint `only-export-components` warnings (development fast-refresh only).
+- **Deficiencies:** none known; oxlint reports 0 warnings (helpers split into `lib.ts`/`hooks.ts`, routes in `App.tsx`).
 
 ## 2. Security
 - **Implemented:** argon2id passwords; HMAC-hashed server sessions; CSRF protection; persisted
@@ -31,11 +31,12 @@ These are honest self-assessments with evidence. No scores are claimed. Commands
   batching with `SKIP LOCKED`; scale-to-zero Cloud Run; multi-stage image without dev tools.
 - **Files:** `docs/DATABASE.md`, `services/engine.py`, `api/insights.py`, `Dockerfile`
 - **Evidence:** image 425 MB, which is dominated by Python runtime and Google client libraries.
+- **Also:** gzip responses over 1 KB, immutable caching for hashed assets, dashboard adherence computed once, on-read dose refresh throttled to once per 30 s per patient.
 - **Deficiencies:** no load test was run.
 
 ## 4. Testing
 - **Verify:** `uv run pytest --cov=app`; `npm test`; `npm run e2e`
-- **Evidence:** backend 75 passed (90% coverage); frontend unit 10 passed; end-to-end 16 passed,
+- **Evidence:** backend 80 passed (90% coverage); frontend unit 11 passed; end-to-end 16 passed,
   covering the 15 product scenarios plus a phone viewport. Migrations and triggers verified on
   PostgreSQL 17.
 - **Deficiencies:** Journey 4's escalation is tested in the backend with a controlled clock

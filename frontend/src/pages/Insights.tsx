@@ -3,8 +3,9 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Lightbulb } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { api, p, type Activity, type AdherenceReport, type Counts, type Member } from '../api'
-import { usePatient } from '../session'
-import { Alert, Button, Empty, ErrorState, PageHead, SelectField, Skeleton, TextField, fmtDate, fmtDateTime } from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Button, Empty, ErrorState, PageHead, SelectField, Skeleton, TextField } from '../ui'
+import { fmtDate, fmtDateTime } from '../lib'
 
 const iso = (d: Date) => d.toISOString().slice(0, 10)
 
@@ -49,8 +50,10 @@ const pct = (c: Counts) => (c.adherence_pct === null ? '—' : `${Math.round(c.a
 
 export function InsightsPage() {
   const { pid, can } = usePatient()
-  const today = new Date()
-  const [range, setRange] = useState({ start: iso(new Date(today.getTime() - 29 * 864e5)), end: iso(today), granularity: 'day' })
+  const [range, setRange] = useState(() => {
+    const today = new Date()
+    return { start: iso(new Date(today.getTime() - 29 * 864e5)), end: iso(today), granularity: 'day' }
+  })
   const q = useQuery({
     queryKey: ['adherence', pid, range],
     queryFn: () => api.get<AdherenceReport>(p(pid, `/adherence?start=${range.start}&end=${range.end}&granularity=${range.granularity}`)),

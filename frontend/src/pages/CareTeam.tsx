@@ -3,12 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Copy, KeyRound, ShieldCheck, UserMinus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api, p, type AccessRequest, type Invitation, type Member, type Permission } from '../api'
-import { usePatient } from '../session'
-import {
-  Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead,
-  PERMISSION_LABEL, PERMISSION_ORDER, ROLE_LABEL, SelectField, Skeleton, TextField, errorText,
-  fmtDate, fmtDateTime, fmtRelative, initials, useToast,
-} from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField, Skeleton, TextField } from '../ui'
+import { PERMISSION_LABEL, PERMISSION_ORDER, ROLE_LABEL, errorText, fmtDate, fmtDateTime, fmtRelative, initials, useToast } from '../lib'
 
 function PermissionPicker({ value, onChange }: { value: Permission[]; onChange: (v: Permission[]) => void }) {
   return (

@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { ConfirmDialog, DoseBadge, TextField, confirmError, doseView, fmtQty } from './ui'
+import { ConfirmDialog, DoseBadge, TextField } from './ui'
+import { confirmError, doseView, fmtQty } from './lib'
 
 describe('doseView', () => {
   const at = new Date('2026-03-10T08:00:00Z').getTime()

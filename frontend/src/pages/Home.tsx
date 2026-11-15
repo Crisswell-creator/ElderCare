@@ -3,11 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { KeyRound, UserPlus, UserRound } from 'lucide-react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { api, type AccessRequest, type CircleSummary, type NotificationItem, type Preferences, type Profile, type User } from '../api'
-import { useMemberships, useSession } from '../session'
-import {
-  Alert, Badge, Button, Checkbox, Empty, ErrorState, PageHead, ROLE_LABEL, SelectField,
-  Skeleton, TextArea, TextField, confirmError, fmtDate, fmtRelative, fmtTime, useForm, useToast,
-} from '../ui'
+import { useMemberships, useSession } from '../hooks'
+import { Alert, Badge, Button, Checkbox, Empty, ErrorState, PageHead, SelectField, Skeleton, TextArea, TextField } from '../ui'
+import { ROLE_LABEL, confirmError, fmtDate, fmtRelative, fmtTime, useForm, useToast } from '../lib'
 
 function VerifyBanner() {
   const { user } = useSession()

@@ -3,8 +3,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Check } from 'lucide-react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { api, type User } from '../api'
-import { useSession } from '../session'
-import { Alert, Button, Logo, TextField, confirmError, useForm } from '../ui'
+import { useSession } from '../hooks'
+import { Alert, Button, Logo, TextField } from '../ui'
+import { confirmError, useForm } from '../lib'
 import { AuthArt } from '../art'
 
 function AuthLayout({ title, intro, children }: { title: string; intro?: ReactNode; children: ReactNode }) {

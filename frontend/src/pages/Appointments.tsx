@@ -2,11 +2,9 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CalendarPlus, ChevronLeft, ChevronRight, Download, MapPin, Plus, Trash2 } from 'lucide-react'
 import { api, p, type Appointment, type Question } from '../api'
-import { usePatient } from '../session'
-import {
-  Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, Skeleton,
-  TextArea, TextField, errorText, fmtDate, fmtTime, useForm, useNow, useToast,
-} from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, Skeleton, TextArea, TextField } from '../ui'
+import { errorText, fmtDate, fmtTime, useForm, useNow, useToast } from '../lib'
 
 const REMINDERS: [number, string][] = [[10080, '1 week before'], [2880, '2 days before'], [1440, '1 day before'], [240, '4 hours before'], [120, '2 hours before'], [60, '1 hour before']]
 

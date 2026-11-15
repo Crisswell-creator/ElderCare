@@ -3,11 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlarmClock, CalendarDays, Check, Phone, RotateCcw, SkipForward, Volume2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api, p, type Dose } from '../api'
-import { usePatient, useSession } from '../session'
-import {
-  Alert, Button, DoseBadge, Empty, ErrorState, Modal, PageHead, Skeleton, TextArea, doseView,
-  errorText, fmtDate, fmtQty, fmtTime, useNow, useToast, type DoseView,
-} from '../ui'
+import { usePatient, useSession } from '../hooks'
+import { Alert, Button, DoseBadge, Empty, ErrorState, Modal, PageHead, Skeleton, TextArea } from '../ui'
+import { doseView, errorText, fmtDate, fmtQty, fmtTime, useNow, useToast, type DoseView } from '../lib'
 
 const SOURCE_LABEL: Record<string, string> = { elder: 'the elder', caregiver: 'a caregiver', family: 'a family member' }
 

@@ -4,8 +4,9 @@
 import { AlertTriangle, CalendarDays, FileDown, Pill } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Counts, Dose } from '../api'
-import { usePatient } from '../session'
-import { Alert, Badge, DoseBadge, Empty, PageHead, Skeleton, doseView, fmtDate, fmtRelative, fmtTime, useNow } from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, DoseBadge, Empty, PageHead, Skeleton } from '../ui'
+import { doseView, fmtDate, fmtRelative, fmtTime, useNow } from '../lib'
 
 function pct(c: Counts | null) {
   return c && c.adherence_pct !== null ? `${Math.round(c.adherence_pct)}%` : 'No data yet'

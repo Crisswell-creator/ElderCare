@@ -151,6 +151,16 @@ def build(
     return report
 
 
+def totals_since(report: Report, start: date) -> Counts:
+    """Totals of a daily report from `start` onward, without another query."""
+    out = Counts()
+    for day, c in report.series.items():
+        if day >= start:
+            for field in ("taken", "skipped", "missed", "unconfirmed", "pending"):
+                setattr(out, field, getattr(out, field) + getattr(c, field))
+    return out
+
+
 def insights(report: Report) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     period = f"{report.start:%d %b} - {report.end:%d %b %Y}"

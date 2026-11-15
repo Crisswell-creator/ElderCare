@@ -240,12 +240,10 @@ def overview(
             )
         ]
     if access.can(Permission.VIEW_ADHERENCE):
-        a7 = adherence.build(
-            db, patient.id, today - timedelta(days=6), today, "day"
-        ).totals.as_dict()
-        a30 = adherence.build(
-            db, patient.id, today - timedelta(days=29), today, "day"
-        ).totals.as_dict()
+        # One query for 30 days; the 7-day figure is summed from the same daily series.
+        rep30 = adherence.build(db, patient.id, today - timedelta(days=29), today, "day")
+        a30 = rep30.totals.as_dict()
+        a7 = adherence.totals_since(rep30, today - timedelta(days=6)).as_dict()
     if access.can(Permission.VIEW_ACTIVITY):
         recent = [
             _activity_out(e)

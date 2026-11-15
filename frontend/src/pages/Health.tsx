@@ -2,11 +2,9 @@ import { useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FileUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { api, p, type DocumentItem, type Profile } from '../api'
-import { usePatient } from '../session'
-import {
-  Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField,
-  Skeleton, TextArea, TextField, errorText, fmtDate, useForm, useToast,
-} from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField, Skeleton, TextArea, TextField } from '../ui'
+import { errorText, fmtDate, useForm, useToast } from '../lib'
 
 type Kind = 'allergies' | 'history' | 'contacts' | 'doctors'
 interface FieldDef { key: string; label: string; type?: 'text' | 'date' | 'tel' | 'select' | 'textarea' | 'check'; options?: [string, string][]; required?: boolean; hint?: string }

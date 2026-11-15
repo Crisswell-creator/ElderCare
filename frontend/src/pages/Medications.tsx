@@ -3,11 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Pause, Pencil, Play, Plus, Trash2, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api, p, type InventoryEvent, type Medication } from '../api'
-import { usePatient } from '../session'
-import {
-  Alert, Badge, Button, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField, Skeleton,
-  TextArea, TextField, errorText, fmtDate, fmtDateTime, fmtQty, fmtTime, useForm, useToast,
-} from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, Button, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField, Skeleton, TextArea, TextField } from '../ui'
+import { errorText, fmtDate, fmtDateTime, fmtQty, fmtTime, useForm, useToast } from '../lib'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 

@@ -6,8 +6,9 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { BellRing, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api, p, type Contact, type HelpStatus } from '../api'
-import { usePatient } from '../session'
-import { Alert, Button, ConfirmDialog, PageHead, Skeleton, TextField, errorText, fmtRelative } from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Button, ConfirmDialog, PageHead, Skeleton, TextField } from '../ui'
+import { errorText, fmtRelative } from '../lib'
 
 const tel = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
 

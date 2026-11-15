@@ -3,11 +3,9 @@ import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, Pencil, Pin, Plus, Trash2 } from 'lucide-react'
 import { api, p, type Member, type Note, type Task } from '../api'
-import { usePatient } from '../session'
-import {
-  Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField,
-  Skeleton, TextArea, TextField, errorText, fmtDate, fmtRelative, useForm, useToast,
-} from '../ui'
+import { usePatient } from '../hooks'
+import { Alert, Badge, Button, Checkbox, ConfirmDialog, Empty, ErrorState, Modal, PageHead, SelectField, Skeleton, TextArea, TextField } from '../ui'
+import { errorText, fmtDate, fmtRelative, useForm, useToast } from '../lib'
 
 const PRIORITY_TONE = { low: 'neutral', normal: 'info', high: 'warn' } as const
 const STATUS_LABEL: Record<Task['status'], string> = { open: 'To do', in_progress: 'In progress', done: 'Done', cancelled: 'Cancelled' }

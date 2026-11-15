@@ -23,15 +23,15 @@ Design rules applied to the tests:
 
 | Check | Command | Result |
 |---|---|---|
-| Backend tests | `cd backend && uv run pytest` | **75 passed** |
+| Backend tests | `cd backend && uv run pytest` | **80 passed** |
 | Backend coverage | `uv run pytest --cov=app` | **90%** statements |
 | Lint | `uv run ruff check .` | clean |
 | Format | `uv run ruff format --check .` | clean |
 | Types | `uv run mypy app` (strict) | no issues in 37 files |
 | Python dependency audit | `uv run pip-audit` | no known vulnerabilities |
 | Frontend types | `npm run typecheck` (TS strict) | clean |
-| Frontend unit tests | `npm test` | **10 passed** |
-| Frontend lint | `npx oxlint src` | 0 errors; 3 warnings (`only-export-components`, a dev fast-refresh notice) |
+| Frontend unit tests | `npm test` | **11 passed** |
+| Frontend lint | `npx oxlint src` | 0 errors, 0 warnings |
 | npm audit | `npm audit` | 0 vulnerabilities |
 | End-to-end | `npm run e2e` | **16 passed** (15 desktop Chrome, 1 Pixel 7) |
 | Accessibility | axe-core in e2e (wcag2a/aa, 21aa, 22aa) | 0 serious or critical violations on 10 scanned screens |

@@ -6,8 +6,9 @@ import {
 import { Suspense, type ReactNode } from 'react'
 import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router-dom'
 import { api, type Permission } from './api'
-import { useMemberships, usePatient, useSession } from './session'
-import { initials, Logo, Skeleton } from './ui'
+import { useMemberships, usePatient, useSession } from './hooks'
+import { Logo, Skeleton } from './ui'
+import { initials } from './lib'
 import { PageArt } from './art'
 
 interface NavItem { to: string; label: string; short?: string; icon: ReactNode; perm?: Permission; badge?: number }

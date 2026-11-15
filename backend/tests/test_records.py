@@ -412,3 +412,39 @@ def test_vercel_cron_secret_authorises_get_tick(monkeypatch):
     )
     ok = api.client.get("/internal/jobs/tick", headers={"Authorization": "Bearer cron-test-secret"})
     assert ok.status_code == 200 and "delivery" in ok.json()
+
+
+def test_seven_day_totals_derived_from_thirty_day_series(clock, circle, db):
+    clock.set(datetime(2026, 3, 31, 23, 0, tzinfo=UTC))
+    med = add_med(circle.elder, circle.pid, ["08:00"], start_date="2026-03-01")
+    db.query(DoseEvent).delete()
+    db.commit()
+    _seed(
+        db,
+        circle.pid,
+        med["id"],
+        date(2026, 3, 1),
+        [("08:00", "taken")] * 20 + [("08:00", "missed")] * 10,
+    )
+    end = date(2026, 3, 30)
+    rep30 = adherence.build(db, circle.pid, end - timedelta(days=29), end, "day")
+    direct7 = adherence.build(db, circle.pid, end - timedelta(days=6), end, "day").totals
+    derived7 = adherence.totals_since(rep30, end - timedelta(days=6))
+    assert derived7.as_dict() == direct7.as_dict()
+    assert derived7.missed == 7 and derived7.taken == 0
+
+
+def test_large_json_responses_are_gzipped(circle):
+    for i in range(30):
+        circle.elder.post(
+            f"/api/patients/{circle.pid}/allergies", {"substance": f"Allergen number {i}"}
+        )
+    res = circle.elder.get(f"/api/patients/{circle.pid}", headers={"Accept-Encoding": "gzip"})
+    assert res.status_code == 200 and res.headers.get("content-encoding") == "gzip"
+
+
+def test_dose_refresh_throttle_never_hides_a_new_medicine(clock, circle):
+    clock.set(datetime(2026, 3, 10, 7, 0, tzinfo=UTC))
+    assert circle.elder.get(f"/api/patients/{circle.pid}/doses").json() == []
+    add_med(circle.elder, circle.pid, ["09:00"])  # within the 30 s throttle window
+    assert len(circle.elder.get(f"/api/patients/{circle.pid}/doses").json()) == 1

@@ -309,6 +309,7 @@ def create_medication(
         details={"times": [t.local_time.strftime("%H:%M") for t in med.times]},
     )
     doses.materialize(db, now, [med.id])
+    invalidate_refresh(access.patient.id)
     db.commit()
     return med_out(med, local_today(access.patient))
 
@@ -385,6 +386,7 @@ def update_medication(
             ),
             details={"changes": changes},
         )
+    invalidate_refresh(access.patient.id)
     db.commit()
     return med_out(med, local_today(access.patient))
 
@@ -422,6 +424,7 @@ def set_medication_status(
         + (f": {med.status_reason}" if med.status_reason else ""),
         details={"from": previous, "to": body.status.value},
     )
+    invalidate_refresh(access.patient.id)
     db.commit()
     return med_out(med, local_today(access.patient))
 
@@ -449,6 +452,7 @@ def remove_medication(
         entity_id=med.id,
         summary=f"{access.user.full_name} removed {med.name} (history kept)",
     )
+    invalidate_refresh(access.patient.id)
     db.commit()
 
 
@@ -531,6 +535,7 @@ def record_as_needed(
         entity_id=dose.id,
         summary=f"{access.user.full_name} recorded an as-needed dose of {med.name}",
     )
+    invalidate_refresh(access.patient.id)
     db.commit()
     return dose_out(dose)
 
@@ -538,9 +543,24 @@ def record_as_needed(
 # ---- doses ----------------------------------------------------------------------------
 
 
+# Last on-read refresh per patient (in app time). Reads within REFRESH_INTERVAL skip the
+# refresh; any medicine change clears the entry. Per process, so serverless instances simply
+# refresh a little more often; correctness never depends on it.
+_last_refresh: dict[int, datetime] = {}
+REFRESH_INTERVAL = timedelta(seconds=30)
+
+
+def invalidate_refresh(patient_id: int) -> None:
+    _last_refresh.pop(patient_id, None)
+
+
 def refresh_patient_doses(db: Session, patient: Patient, now: datetime) -> None:
     """Brings this patient's doses up to date on read, so screens are correct even between
     scheduler ticks. Notifications are still sent only by the scheduler."""
+    last = _last_refresh.get(patient.id)
+    if last is not None and timedelta(0) <= now - last < REFRESH_INTERVAL:
+        return
+    _last_refresh[patient.id] = now
     med_ids = list(
         db.scalars(
             select(Medication.id).where(
